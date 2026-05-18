@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_18_220000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -109,7 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_210000) do
     t.text "bio"
     t.string "city"
     t.string "confirmation_token"
-    t.string "country", null: false
+    t.string "country"
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.boolean "email_confirmed", default: false, null: false
@@ -119,7 +119,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_210000) do
     t.boolean "otp_enabled", default: false, null: false
     t.string "otp_secret"
     t.string "password_digest", null: false
-    t.string "profession", null: false
+    t.string "profession"
     t.boolean "published", default: false, null: false
     t.string "role", default: "nomad", null: false
     t.datetime "updated_at", null: false
