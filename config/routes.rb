@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # Backoffice — área de miembros
   namespace :backoffice do
     root "dashboard#index"
+    get  "tutorial", to: "dashboard#tutorial", as: :tutorial
     get  "login",    to: "sessions#new",           as: :login
     post "login",    to: "sessions#create"
     delete "logout", to: "sessions#destroy",        as: :logout

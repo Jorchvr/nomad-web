@@ -212,6 +212,9 @@
             <%= link_to root_path do %>
               <i class="bi bi-grid"></i> View Directory
             <% end %>
+            <%= link_to backoffice_tutorial_path, class: "#{controller_name == 'dashboard' && action_name == 'tutorial' ? 'active' : ''}" do %>
+              <i class="bi bi-question-circle"></i> How to use
+            <% end %>
           <% else %>
             <%# Client sidebar — minimal %>
             <%= link_to backoffice_messages_path, class: "#{controller_name == 'messages' ? 'active' : ''}" do %>

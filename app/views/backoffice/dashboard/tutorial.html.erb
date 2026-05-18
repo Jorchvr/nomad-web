@@ -1,0 +1,188 @@
+<% content_for :page_title, "How to use World Nomad Web" %>
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <span class="wnw-logo wnw-logo-md"></span>
+  <div>
+    <h4 class="fw-bold mb-0">How to use World Nomad Web</h4>
+    <p class="text-muted mb-0">Everything you need to know to get the most out of the platform.</p>
+  </div>
+</div>
+
+<%# Step 1 — Profile %>
+<div class="card p-4 mb-3">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:var(--wnw-primary-light);color:var(--wnw-primary);font-weight:700;font-size:1.1rem;">1</div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1"><i class="bi bi-person-circle me-2 text-primary"></i>Set up your profile</h5>
+      <p class="text-muted mb-3">Your profile is your public card in the nomad directory. Fill in all your details so other people can find and contact you.</p>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:var(--wnw-primary-light);border:1px solid var(--wnw-border);">
+            <div class="fw-semibold small mb-1"><i class="bi bi-pencil-square me-1"></i>Edit Profile</div>
+            <ul class="text-muted small mb-0 ps-3">
+              <li>Name, country, profession</li>
+              <li>Bio — describe who you are and what you do</li>
+              <li>WhatsApp number so clients can contact you</li>
+              <li>Upload a profile photo (via Gravatar)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:var(--wnw-primary-light);border:1px solid var(--wnw-border);">
+            <div class="fw-semibold small mb-1"><i class="bi bi-eye me-1"></i>Visibility</div>
+            <p class="text-muted small mb-0">
+              Toggle <strong>Published</strong> to appear in the public directory. While hidden, your profile is invisible to visitors — useful while you're still setting things up.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <%= link_to edit_backoffice_profile_path, class: "btn btn-primary btn-sm me-2" do %>
+          <i class="bi bi-pencil-square me-1"></i>Edit my profile
+        <% end %>
+        <%= link_to backoffice_profile_path, class: "btn btn-outline-primary btn-sm" do %>
+          <i class="bi bi-person-circle me-1"></i>Preview my profile
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%# Step 2 — Portfolio %>
+<div class="card p-4 mb-3">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:var(--wnw-primary-light);color:var(--wnw-primary);font-weight:700;font-size:1.1rem;">2</div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1"><i class="bi bi-images me-2 text-primary"></i>Build your portfolio</h5>
+      <p class="text-muted mb-2">Upload photos of your work to showcase what you do. These appear on your public profile so visitors can see your style and skills before contacting you.</p>
+      <p class="text-muted small mb-3">You can also add <strong>profile links</strong> (GitHub, LinkedIn, portfolio site, etc.) directly from the Edit Profile page.</p>
+      <%= link_to backoffice_work_photos_path, class: "btn btn-outline-primary btn-sm" do %>
+        <i class="bi bi-images me-1"></i>Go to My Photos
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Step 3 — Travel Stories %>
+<div class="card p-4 mb-3">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:var(--wnw-primary-light);color:var(--wnw-primary);font-weight:700;font-size:1.1rem;">3</div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1"><i class="bi bi-map me-2 text-primary"></i>Share travel stories</h5>
+      <p class="text-muted mb-2">Write posts about places you've visited, remote work experiences, tips for other nomads, or anything worth sharing. Stories can be published publicly or kept as drafts.</p>
+      <div class="row g-2 mb-3">
+        <div class="col-auto">
+          <span class="badge" style="background:var(--wnw-primary-light);color:var(--wnw-primary);border:1px solid var(--wnw-border);">
+            <i class="bi bi-geo-alt me-1"></i>Location & country
+          </span>
+        </div>
+        <div class="col-auto">
+          <span class="badge" style="background:var(--wnw-primary-light);color:var(--wnw-primary);border:1px solid var(--wnw-border);">
+            <i class="bi bi-calendar me-1"></i>Date visited
+          </span>
+        </div>
+        <div class="col-auto">
+          <span class="badge" style="background:var(--wnw-primary-light);color:var(--wnw-primary);border:1px solid var(--wnw-border);">
+            <i class="bi bi-briefcase me-1"></i>Client name (optional)
+          </span>
+        </div>
+      </div>
+      <%= link_to new_backoffice_travel_story_path, class: "btn btn-outline-primary btn-sm" do %>
+        <i class="bi bi-plus-circle me-1"></i>Write a travel story
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Step 4 — Nomads & Friends %>
+<div class="card p-4 mb-3">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:var(--wnw-primary-light);color:var(--wnw-primary);font-weight:700;font-size:1.1rem;">4</div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1"><i class="bi bi-people-fill me-2 text-primary"></i>Connect with other nomads</h5>
+      <p class="text-muted mb-3">Browse all registered nomads, view their profiles and portfolios, and send friend requests to build your network.</p>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:var(--wnw-primary-light);border:1px solid var(--wnw-border);">
+            <div class="fw-semibold small mb-1"><i class="bi bi-globe2 me-1"></i>Nomads</div>
+            <p class="text-muted small mb-0">See all members of the platform. Click on any profile to view their full portfolio, travel stories, and contact info.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:var(--wnw-primary-light);border:1px solid var(--wnw-border);">
+            <div class="fw-semibold small mb-1"><i class="bi bi-person-check me-1"></i>Friends</div>
+            <p class="text-muted small mb-0">Send friend requests and manage incoming ones. Your friends list helps you stay connected with your closest contacts.</p>
+          </div>
+        </div>
+      </div>
+      <%= link_to backoffice_members_path, class: "btn btn-outline-primary btn-sm me-2" do %>
+        <i class="bi bi-globe2 me-1"></i>Browse nomads
+      <% end %>
+      <%= link_to backoffice_friendships_path, class: "btn btn-outline-primary btn-sm" do %>
+        <i class="bi bi-people-fill me-1"></i>My friends
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Step 5 — Messages %>
+<div class="card p-4 mb-3">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:var(--wnw-primary-light);color:var(--wnw-primary);font-weight:700;font-size:1.1rem;">5</div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1"><i class="bi bi-chat-dots-fill me-2 text-primary"></i>Messages</h5>
+      <p class="text-muted mb-2">Send and receive private messages with other nomads on the platform. You can start a conversation from any member's profile page.</p>
+      <p class="text-muted small mb-3">A badge in the sidebar shows how many unread messages you have.</p>
+      <%= link_to backoffice_messages_path, class: "btn btn-outline-primary btn-sm" do %>
+        <i class="bi bi-chat-dots-fill me-1"></i>Go to messages
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Step 6 — Forums %>
+<div class="card p-4 mb-3">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:var(--wnw-primary-light);color:var(--wnw-primary);font-weight:700;font-size:1.1rem;">6</div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1"><i class="bi bi-chat-square-text me-2 text-primary"></i>Forums</h5>
+      <p class="text-muted mb-2">Join community discussions. Create forum topics or reply to existing threads. Great for asking questions, sharing tips, or finding collaborators.</p>
+      <%= link_to backoffice_forums_path, class: "btn btn-outline-primary btn-sm" do %>
+        <i class="bi bi-chat-square-text me-1"></i>Open forums
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Public directory %>
+<div class="card p-4 mb-4" style="border-color:var(--wnw-bark) !important;">
+  <div class="d-flex align-items-start gap-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:44px;height:44px;background:#fdf0e4;color:var(--wnw-bark);font-size:1.2rem;">
+      <i class="bi bi-grid"></i>
+    </div>
+    <div class="flex-grow-1">
+      <h5 class="fw-bold mb-1">Public directory</h5>
+      <p class="text-muted mb-2">This is how visitors see the platform — no login required. They can search nomads by name, profession, or country and contact them via WhatsApp or email.</p>
+      <%= link_to root_path, class: "btn btn-sm me-2", style: "background:var(--wnw-bark);color:#fff;border:none;" do %>
+        <i class="bi bi-box-arrow-up-right me-1"></i>View public directory
+      <% end %>
+      <% if current_user.published? %>
+        <%= link_to frontoffice_profile_path(current_user), target: "_blank", class: "btn btn-sm btn-outline-secondary" do %>
+          <i class="bi bi-person-circle me-1"></i>My public profile
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="text-center text-muted small pb-2">
+  <i class="bi bi-globe2 me-1"></i>
+  Need help? Ask in the <%= link_to "Forums", backoffice_forums_path, class: "text-primary" %> or message another nomad.
+</div>
