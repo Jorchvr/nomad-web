@@ -21,6 +21,22 @@ class Rack::Attack
     req.ip unless req.path.start_with?("/assets")
   end
 
+  # Send admin email alert on brute-force throttle (once per IP per 10 minutes)
+  ActiveSupport::Notifications.subscribe("rack.attack") do |_name, _start, _finish, _id, payload|
+    req = payload[:request]
+    next unless req.env["rack.attack.match_type"] == :throttle
+    next unless req.env["rack.attack.matched"].start_with?("logins/")
+
+    ip         = req.ip
+    email_tried = req.params["email"].to_s.downcase.presence
+
+    cache_key = "brute_force_alert/#{ip}"
+    unless Rails.cache.exist?(cache_key)
+      Rails.cache.write(cache_key, true, expires_in: 10.minutes)
+      AdminMailer.brute_force_alert(ip, email_tried).deliver_now rescue nil
+    end
+  end
+
   # Return 429 with a clear message when throttled
   self.throttled_responder = lambda do |req|
     [

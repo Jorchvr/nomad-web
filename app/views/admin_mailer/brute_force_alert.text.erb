@@ -1,0 +1,13 @@
+⚠️ BRUTE FORCE ATTEMPT DETECTED — World Nomad Web
+
+Multiple failed login attempts were recorded.
+
+IP Address : <%= @ip %>
+Email tried: <%= @email_tried.presence || "(not captured)" %>
+Time       : <%= @time %>
+
+The IP has been automatically throttled by Rack::Attack.
+
+Open dashboard: <%= @app_url %>
+
+-- World Nomad Web automated security alert
