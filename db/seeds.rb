@@ -1,3 +1,5 @@
+exit unless Rails.env.development?
+
 User.destroy_all
 
 nomads = [
