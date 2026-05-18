@@ -59,7 +59,7 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost") }
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
     address:              ENV.fetch("SMTP_HOST", "smtp.resend.com"),
     port:                 ENV.fetch("SMTP_PORT", 587).to_i,
