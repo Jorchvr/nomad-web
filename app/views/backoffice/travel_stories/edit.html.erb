@@ -1,0 +1,11 @@
+<% content_for :page_title, "Edit Story" %>
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <%= link_to backoffice_travel_stories_path,
+        class: "text-decoration-none text-muted small d-inline-flex align-items-center gap-1" do %>
+    <i class="bi bi-arrow-left"></i> My Stories
+  <% end %>
+  <h4 class="fw-bold mb-0" style="font-family:'Lora',serif;color:#1a2e20;">Edit Story</h4>
+</div>
+
+<%= render "form", story: @story %>

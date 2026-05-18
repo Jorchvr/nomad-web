@@ -1,0 +1,184 @@
+<% content_for :title, "#{@story.title} — World Nomad Web" %>
+
+<!-- Hero / cover -->
+<% if @story.photos.attached? %>
+  <div style="height:420px;overflow:hidden;background:#1a2e20;position:relative;">
+    <%= image_tag @story.photos.first,
+          style: "width:100%;height:100%;object-fit:cover;opacity:.82;",
+          alt: @story.title %>
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(26,46,32,.85) 100%);"></div>
+    <div class="container" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);padding-bottom:2rem;">
+      <span class="badge rounded-pill mb-2" style="background:rgba(61,122,85,.75);color:#fff;font-size:.82rem;backdrop-filter:blur(4px);">
+        <i class="bi bi-geo-alt-fill me-1"></i><%= @story.location %>
+      </span>
+      <h1 class="fw-bold text-white mb-0" style="font-family:'Lora',serif;text-shadow:0 2px 8px rgba(0,0,0,.4);">
+        <%= @story.title %>
+      </h1>
+    </div>
+  </div>
+<% else %>
+  <div class="py-5 text-center text-white" style="background:linear-gradient(135deg,#1a2e20,#3d7a55);">
+    <div class="container">
+      <span class="badge rounded-pill mb-2" style="background:rgba(255,255,255,.15);color:#fff;">
+        <i class="bi bi-geo-alt-fill me-1"></i><%= @story.location %>
+      </span>
+      <h1 class="fw-bold mb-0" style="font-family:'Lora',serif;"><%= @story.title %></h1>
+    </div>
+  </div>
+<% end %>
+
+<div class="container py-5">
+  <!-- Back link -->
+  <%= link_to frontoffice_travel_stories_path,
+        class: "text-decoration-none text-muted small d-inline-flex align-items-center gap-1 mb-4" do %>
+    <i class="bi bi-arrow-left"></i> Back to stories
+  <% end %>
+
+  <div class="row g-5">
+
+    <!-- Left: content -->
+    <div class="col-lg-8">
+
+      <!-- Meta bar -->
+      <div class="d-flex flex-wrap gap-3 mb-4 pb-3" style="border-bottom:1.5px solid #c4d4b8;">
+        <span class="d-flex align-items-center gap-1 text-muted small">
+          <i class="bi bi-calendar3" style="color:#3d7a55;"></i>
+          <%= @story.visited_at.strftime("%B %Y") %>
+        </span>
+        <% if @story.client_name.present? %>
+          <span class="d-flex align-items-center gap-1 text-muted small">
+            <i class="bi bi-briefcase" style="color:#3d7a55;"></i>
+            <%= @story.client_name %>
+          </span>
+        <% end %>
+        <span class="d-flex align-items-center gap-1 text-muted small">
+          <i class="bi bi-geo-alt" style="color:#3d7a55;"></i>
+          <%= @story.location %>
+        </span>
+        <span class="d-flex align-items-center gap-1 text-muted small">
+          <i class="bi bi-images" style="color:#3d7a55;"></i>
+          <%= @story.photos.size %> photos
+        </span>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-5 lh-lg" style="font-size:1.06rem;color:#2a3a2e;">
+        <%= simple_format(@story.description) %>
+      </div>
+
+      <!-- Photo gallery -->
+      <% if @story.photos.size > 1 %>
+        <h5 class="fw-semibold mb-3" style="font-family:'Lora',serif;color:#1a2e20;">
+          <i class="bi bi-images me-2" style="color:#3d7a55;"></i>Photos
+        </h5>
+        <div class="row g-3 mb-5">
+          <% @story.photos.each_with_index do |photo, i| %>
+            <% next if i == 0 && @story.photos.attached? %>
+            <div class="col-6 col-md-4">
+              <a href="#" class="wnw-lightbox-trigger d-block text-decoration-none"
+                 data-src="<%= url_for(photo) %>">
+                <div class="rounded-3 overflow-hidden" style="border:1.5px solid #c4d4b8;background:#f5f0e8;">
+                  <%= image_tag photo, style: "width:100%;height:auto;display:block;", alt: "" %>
+                </div>
+              </a>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+    </div>
+
+    <!-- Right: author card -->
+    <div class="col-lg-4">
+      <div class="card p-4" style="position:sticky;top:1.5rem;">
+        <h6 class="fw-semibold mb-3" style="color:#2d6044;">About the nomad</h6>
+
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="<%= user_avatar_url(@story.user, 80) %>"
+               alt="<%= @story.user.name %>"
+               class="rounded-circle"
+               style="width:60px;height:60px;object-fit:cover;border:3px solid #c4d4b8;">
+          <div>
+            <p class="mb-0 fw-bold" style="font-family:'Lora',serif;color:#1a2e20;">
+              <%= @story.user.name %>
+            </p>
+            <p class="mb-0 text-muted small"><%= @story.user.profession %></p>
+          </div>
+        </div>
+
+        <div class="text-muted small mb-3">
+          <i class="bi bi-geo-alt me-1" style="color:#3d7a55;"></i>
+          <%= [@story.user.city, @story.user.country].compact.join(", ") %>
+        </div>
+
+        <% if @story.user.bio.present? %>
+          <p class="text-muted small mb-3"
+             style="display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;">
+            <%= @story.user.bio %>
+          </p>
+        <% end %>
+
+        <%= link_to frontoffice_profile_path(@story.user),
+              class: "btn btn-outline-primary w-100 mb-2" do %>
+          <i class="bi bi-person me-1"></i>View profile
+        <% end %>
+
+        <% unless current_user && current_user.id == @story.user.id %>
+          <% if current_user %>
+            <%= link_to backoffice_message_conversation_path(@story.user.id),
+                  class: "btn btn-primary w-100" do %>
+              <i class="bi bi-chat-fill me-1"></i>Send message
+            <% end %>
+          <% else %>
+            <%= link_to backoffice_login_path, class: "btn btn-primary w-100" do %>
+              <i class="bi bi-chat-fill me-1"></i>Sign in to message
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if @story.user.profile_links.any? %>
+          <hr style="border-color:#c4d4b8;">
+          <p class="text-muted small fw-semibold mb-2">Links</p>
+          <% @story.user.profile_links.each do |link| %>
+            <%= link_to link.url, target: "_blank", rel: "noopener noreferrer",
+                  class: "d-flex align-items-center gap-2 text-decoration-none mb-1",
+                  style: "color:#3d7a55;font-size:.85rem;" do %>
+              <i class="bi bi-box-arrow-up-right"></i>
+              <span class="text-truncate"><%= link.label %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="modal fade" id="wnwLightbox" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content" style="background:#1a2e20;border:none;">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center p-2 p-md-4">
+        <img id="wnwLightboxImg" src="" alt=""
+             style="max-width:100%;max-height:82vh;object-fit:contain;border-radius:8px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modal = new bootstrap.Modal(document.getElementById("wnwLightbox"));
+    const imgEl = document.getElementById("wnwLightboxImg");
+    document.querySelectorAll(".wnw-lightbox-trigger").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.preventDefault();
+        imgEl.src = el.dataset.src;
+        modal.show();
+      });
+    });
+  });
+</script>

@@ -1,0 +1,68 @@
+<% content_for :page_title, "Work photos" %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <h4 class="fw-bold mb-0"><i class="bi bi-images me-2 text-primary"></i>Work photos</h4>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card p-4">
+      <h6 class="fw-semibold mb-3">Upload photo</h6>
+      <%= form_with model: @photo, url: backoffice_work_photos_path,
+            html: { multipart: true } do |f| %>
+        <% if @photo.errors.any? %>
+          <div class="alert alert-danger alert-sm py-2">
+            <% @photo.errors.full_messages.each do |msg| %>
+              <div class="small"><%= msg %></div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= f.label :image, "Image", class: "form-label fw-semibold" %>
+          <%= f.file_field :image, class: "form-control", accept: "image/*" %>
+          <div class="form-text">JPG, PNG, GIF, WebP · max 5 MB</div>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :caption, "Description (optional)", class: "form-label fw-semibold" %>
+          <%= f.text_field :caption, class: "form-control", placeholder: "e.g. Web project 2024",
+                maxlength: 200 %>
+        </div>
+
+        <%= f.submit "Upload photo", class: "btn btn-primary w-100" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <% if @photos.any? %>
+      <div class="row g-3">
+        <% @photos.each do |photo| %>
+          <div class="col-6 col-lg-4">
+            <div class="card overflow-hidden h-100">
+              <div class="ratio ratio-1x1">
+                <%= image_tag photo.image, class: "w-100 h-100", style: "object-fit:cover;" %>
+              </div>
+              <div class="p-2 d-flex align-items-center justify-content-between gap-1">
+                <span class="small text-muted text-truncate">
+                  <%= photo.caption.presence || "No description" %>
+                </span>
+                <%= button_to backoffice_work_photo_path(photo), method: :delete,
+                      class: "btn btn-link btn-sm text-danger p-0 flex-shrink-0",
+                      data: { turbo_confirm: "Delete this photo?" } do %>
+                  <i class="bi bi-trash small"></i>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="card p-5 text-center text-muted h-100 d-flex align-items-center justify-content-center">
+        <i class="bi bi-image fs-1 d-block mb-3 opacity-25"></i>
+        <p class="mb-0">You haven't uploaded any work photos yet.<br>Upload your first photo using the form.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

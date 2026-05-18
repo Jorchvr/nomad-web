@@ -1,0 +1,103 @@
+<div class="card shadow-sm" style="width:520px;max-width:95vw;">
+  <div class="card-body p-4 p-md-5">
+
+    <!-- Role badge + back -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <%= link_to backoffice_register_path,
+            class: "text-decoration-none text-muted small d-flex align-items-center gap-1" do %>
+        <i class="bi bi-arrow-left"></i> Change role
+      <% end %>
+      <% if @role == "nomad" %>
+        <span class="badge rounded-pill d-flex align-items-center gap-1 px-3 py-2"
+              style="background:#e8f5ee;color:#2d6044;border:1px solid #b2d8c0;">
+          <i class="bi bi-globe2"></i> Digital Nomad
+        </span>
+      <% else %>
+        <span class="badge rounded-pill d-flex align-items-center gap-1 px-3 py-2"
+              style="background:#f5f0e8;color:#8b6340;border:1px solid #ddd0b8;">
+          <i class="bi bi-briefcase-fill"></i> Looking for talent
+        </span>
+      <% end %>
+    </div>
+
+    <div class="text-center mb-4">
+      <span class="wnw-logo wnw-logo-sm d-block mx-auto mb-2"></span>
+      <h5 class="fw-bold mb-1" style="font-family:'Lora',serif;">Create your account</h5>
+      <p class="text-muted small mb-0">
+        <% if @role == "nomad" %>
+          You'll be able to complete your full profile after signing up.
+        <% else %>
+          Quick setup — browse profiles and start messaging right away.
+        <% end %>
+      </p>
+    </div>
+
+    <%= form_with model: @user, url: backoffice_register_path, method: :post, local: true do |f| %>
+      <%= f.hidden_field :role %>
+
+      <% if @user.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0 ps-3">
+            <% @user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row g-3">
+        <div class="col-12">
+          <%= f.label :name, "Full name", class: "form-label fw-semibold" %>
+          <%= f.text_field :name,
+                class: "form-control #{@user.errors[:name].any? ? 'is-invalid' : ''}",
+                placeholder: "Your name", autofocus: true %>
+        </div>
+
+        <% if @role == "nomad" %>
+          <div class="col-md-6">
+            <%= f.label :country, "Country", class: "form-label fw-semibold" %>
+            <%= f.text_field :country,
+                  class: "form-control #{@user.errors[:country].any? ? 'is-invalid' : ''}",
+                  placeholder: "e.g. Mexico" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :profession, "Profession", class: "form-label fw-semibold" %>
+            <%= f.text_field :profession,
+                  class: "form-control #{@user.errors[:profession].any? ? 'is-invalid' : ''}",
+                  placeholder: "e.g. UX Designer" %>
+          </div>
+        <% end %>
+
+        <div class="col-12">
+          <%= f.label :email, "Email", class: "form-label fw-semibold" %>
+          <%= f.email_field :email,
+                class: "form-control #{@user.errors[:email].any? ? 'is-invalid' : ''}",
+                placeholder: "you@email.com" %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :password, "Password", class: "form-label fw-semibold" %>
+          <%= f.password_field :password, class: "form-control", placeholder: "At least 6 characters" %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :password_confirmation, "Confirm", class: "form-label fw-semibold" %>
+          <%= f.password_field :password_confirmation, class: "form-control", placeholder: "Repeat password" %>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <%= f.submit @role == "nomad" ? "Create Nomad account" : "Create account",
+              class: "btn btn-lg w-100 fw-semibold",
+              style: @role == "nomad" ? "background:#3d7a55;color:#fff;border:none;" : "background:#8b6340;color:#fff;border:none;" %>
+      </div>
+    <% end %>
+
+    <hr class="my-4">
+    <p class="text-center text-muted mb-0 small">
+      Already have an account?
+      <%= link_to "Sign in", backoffice_login_path, class: "fw-semibold text-decoration-none" %>
+    </p>
+    <p class="text-center mt-2">
+      <%= link_to "← View directory", root_path, class: "text-muted small" %>
+    </p>
+  </div>
+</div>

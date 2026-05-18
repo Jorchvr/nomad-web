@@ -1,0 +1,110 @@
+<% content_for :page_title, @member.name %>
+
+<% friendship = current_user.friendship_with(@member) %>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card p-4 text-center">
+      <img src="<%= user_avatar_url(@member, 100) %>" class="rounded-circle mx-auto mb-3" width="100" height="100">
+      <h5 class="fw-bold mb-1"><%= @member.name %></h5>
+      <div class="text-muted mb-1"><%= @member.profession %></div>
+      <div class="text-muted small mb-3"><i class="bi bi-geo-alt me-1"></i><%= @member.country %></div>
+
+      <% if friendship.nil? %>
+        <%= button_to backoffice_friendships_path(receiver_id: @member.id), method: :post,
+              class: "btn btn-primary w-100 mb-2" do %>
+          <i class="bi bi-person-plus me-1"></i>Send friend request
+        <% end %>
+      <% elsif friendship.pending? && friendship.sender == current_user %>
+        <button class="btn btn-secondary w-100 mb-2" disabled>
+          <i class="bi bi-hourglass-split me-1"></i>Request pending
+        </button>
+        <%= button_to backoffice_friendship_path(friendship), method: :delete,
+              class: "btn btn-outline-secondary btn-sm w-100" do %>
+          Cancel request
+        <% end %>
+      <% elsif friendship.pending? && friendship.receiver == current_user %>
+        <div class="d-flex gap-2 mb-2">
+          <%= button_to backoffice_friendship_path(friendship), method: :patch,
+                class: "btn btn-success flex-grow-1" do %>
+            <i class="bi bi-check-lg"></i> Accept
+          <% end %>
+          <%= button_to backoffice_friendship_path(friendship), method: :delete,
+                class: "btn btn-outline-danger" do %>
+            <i class="bi bi-x-lg"></i>
+          <% end %>
+        </div>
+      <% elsif friendship.accepted? %>
+        <div class="alert alert-success py-2 mb-2">
+          <i class="bi bi-check-circle me-1"></i>You are friends
+        </div>
+        <%= button_to backoffice_friendship_path(friendship), method: :delete,
+              class: "btn btn-outline-danger btn-sm w-100",
+              data: { turbo_confirm: "Remove #{@member.name} from your friends?" } do %>
+          <i class="bi bi-person-dash me-1"></i>Remove friend
+        <% end %>
+      <% end %>
+
+      <%= link_to backoffice_message_conversation_path(@member.id),
+            class: "btn btn-primary btn-sm w-100 mt-2" do %>
+        <i class="bi bi-chat-fill me-1"></i>Send message
+      <% end %>
+    </div>
+
+    <% if @member.profile_links.any? %>
+      <div class="card mt-3 p-3">
+        <div class="fw-semibold mb-2"><i class="bi bi-link-45deg me-1"></i>Links</div>
+        <% @member.profile_links.each do |link| %>
+          <%= link_to link.url, target: "_blank", rel: "noopener noreferrer",
+                class: "d-flex align-items-center gap-2 text-decoration-none text-dark mb-2" do %>
+            <i class="bi bi-box-arrow-up-right text-primary"></i>
+            <span class="small"><%= link.label %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @mutual_friends.any? %>
+      <div class="card mt-3 p-3">
+        <div class="fw-semibold mb-2">
+          <i class="bi bi-people me-1"></i>Mutual friends (<%= @mutual_friends.count %>)
+        </div>
+        <% @mutual_friends.first(5).each do |mf| %>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <img src="<%= user_avatar_url(mf, 32) %>" class="rounded-circle" width="32" height="32">
+            <span class="small"><%= mf.name %></span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-8">
+    <% if @member.bio.present? %>
+      <div class="card p-4 mb-3">
+        <h6 class="fw-semibold mb-2">About me</h6>
+        <p class="text-muted mb-0"><%= simple_format(@member.bio) %></p>
+      </div>
+    <% end %>
+
+    <% photos = @member.work_photos.includes(image_attachment: :blob).order(created_at: :desc) %>
+    <% if photos.any? %>
+      <div class="card p-4">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-images me-1"></i>Work photos</h6>
+        <div class="row g-2">
+          <% photos.each do |photo| %>
+            <div class="col-4">
+              <div class="ratio ratio-1x1 rounded overflow-hidden">
+                <%= image_tag photo.image, class: "w-100 h-100", style: "object-fit:cover;",
+                      alt: photo.caption.presence || "Work photo" %>
+              </div>
+              <% if photo.caption.present? %>
+                <p class="text-muted small mt-1 mb-0"><%= photo.caption %></p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

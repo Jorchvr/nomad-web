@@ -1,0 +1,134 @@
+<%= form_with model: [:backoffice, story], class: "needs-validation" do |f| %>
+  <% if story.errors.any? %>
+    <div class="alert alert-danger mb-4">
+      <i class="bi bi-exclamation-circle me-2"></i>
+      <strong>Please fix the following:</strong>
+      <ul class="mb-0 mt-2">
+        <% story.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row g-4">
+
+    <!-- Left column -->
+    <div class="col-lg-8">
+
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3" style="color:#2d6044;">Story details</h6>
+
+        <div class="mb-3">
+          <%= f.label :title, "Title", class: "form-label fw-semibold" %>
+          <%= f.text_field :title, class: "form-control", placeholder: "e.g. Two months in Lisbon building a fintech app" %>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <%= f.label :location, "Location", class: "form-label fw-semibold" %>
+            <%= f.text_field :location, class: "form-control", placeholder: "e.g. Lisbon, Portugal" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :country, "Country", class: "form-label fw-semibold" %>
+            <%= f.text_field :country, class: "form-control", placeholder: "e.g. Portugal" %>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <%= f.label :client_name, "Client / Project name", class: "form-label fw-semibold" %>
+            <%= f.text_field :client_name, class: "form-control", placeholder: "Optional" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :visited_at, "When", class: "form-label fw-semibold" %>
+            <%= f.date_field :visited_at, class: "form-control" %>
+          </div>
+        </div>
+
+        <div class="mb-0">
+          <%= f.label :description, "Your experience", class: "form-label fw-semibold" %>
+          <%= f.text_area :description, class: "form-control", rows: 10,
+                placeholder: "Tell your story — the project, the city, the culture, the challenges, the wins..." %>
+          <div class="form-text">Markdown-style line breaks are preserved.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="col-lg-4">
+
+      <!-- Photos -->
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3" style="color:#2d6044;">
+          <i class="bi bi-images me-1"></i>Photos
+        </h6>
+
+        <% if story.persisted? && story.photos.attached? %>
+          <div class="row g-2 mb-3">
+            <% story.photos.each do |photo| %>
+              <div class="col-6">
+                <div class="rounded-2 overflow-hidden" style="aspect-ratio:1;border:1.5px solid #c4d4b8;">
+                  <%= image_tag photo, style: "width:100%;height:100%;object-fit:cover;", alt: "" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <p class="text-muted small mb-2">Upload new photos to replace / add:</p>
+        <% end %>
+
+        <div class="mb-0">
+          <%= f.label :photos, "Select photos", class: "form-label fw-semibold" %>
+          <%= f.file_field :photos, multiple: true, accept: "image/*",
+                class: "form-control",
+                id: "story_photos_input" %>
+          <div class="form-text">JPG, PNG, WebP — up to 8 MB each. First photo is the cover.</div>
+        </div>
+
+        <!-- Preview -->
+        <div id="story-photo-preview" class="row g-2 mt-2"></div>
+      </div>
+
+      <!-- Visibility -->
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3" style="color:#2d6044;">
+          <i class="bi bi-eye me-1"></i>Visibility
+        </h6>
+        <div class="form-check form-switch">
+          <%= f.check_box :published, class: "form-check-input", role: "switch", id: "story_published" %>
+          <%= f.label :published, "Publish this story", class: "form-check-label fw-semibold" %>
+        </div>
+        <p class="text-muted small mt-1 mb-0">Published stories appear on the public travel feed.</p>
+      </div>
+
+      <!-- Submit -->
+      <div class="d-grid gap-2">
+        <%= f.submit story.persisted? ? "Save changes" : "Publish story",
+              class: "btn btn-primary fw-semibold" %>
+        <%= link_to "Cancel", backoffice_travel_stories_path,
+              class: "btn btn-outline-secondary" %>
+      </div>
+
+    </div>
+  </div>
+<% end %>
+
+<script>
+  document.getElementById("story_photos_input").addEventListener("change", function () {
+    const preview = document.getElementById("story-photo-preview");
+    preview.innerHTML = "";
+    Array.from(this.files).forEach(function (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const col = document.createElement("div");
+        col.className = "col-6";
+        col.innerHTML = '<div style="aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid #c4d4b8;background:#f5f0e8;">'
+          + '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
+          + '</div>';
+        preview.appendChild(col);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+</script>

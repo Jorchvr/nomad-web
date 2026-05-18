@@ -1,0 +1,96 @@
+<% content_for :page_title, "Friends" %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <h4 class="fw-bold mb-0"><i class="bi bi-people-fill me-2 text-primary"></i>Friends</h4>
+  <%= link_to backoffice_members_path, class: "btn btn-primary btn-sm" do %>
+    <i class="bi bi-search me-1"></i>Find nomads
+  <% end %>
+</div>
+
+<% if @pending_received.any? %>
+  <div class="card mb-4">
+    <div class="card-header fw-semibold">
+      <i class="bi bi-person-plus-fill me-2 text-warning"></i>
+      Friend requests received
+      <span class="badge bg-warning text-dark ms-1"><%= @pending_received.count %></span>
+    </div>
+    <div class="card-body p-0">
+      <% @pending_received.each do |fs| %>
+        <div class="d-flex align-items-center gap-3 p-3 border-bottom">
+          <img src="<%= user_avatar_url(fs.sender, 48) %>" class="rounded-circle" width="48" height="48">
+          <div class="flex-grow-1">
+            <div class="fw-semibold"><%= fs.sender.name %></div>
+            <div class="text-muted small"><%= fs.sender.profession %> · <%= fs.sender.country %></div>
+          </div>
+          <div class="d-flex gap-2">
+            <%= button_to backoffice_friendship_path(fs), method: :patch,
+                  class: "btn btn-success btn-sm" do %>
+              <i class="bi bi-check-lg"></i> Accept
+            <% end %>
+            <%= button_to backoffice_friendship_path(fs), method: :delete,
+                  class: "btn btn-outline-danger btn-sm",
+                  data: { turbo_confirm: "Decline this request?" } do %>
+              <i class="bi bi-x-lg"></i>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @pending_sent.any? %>
+  <div class="card mb-4">
+    <div class="card-header fw-semibold">
+      <i class="bi bi-hourglass-split me-2 text-secondary"></i>Friend requests sent
+    </div>
+    <div class="card-body p-0">
+      <% @pending_sent.each do |fs| %>
+        <div class="d-flex align-items-center gap-3 p-3 border-bottom">
+          <img src="<%= user_avatar_url(fs.receiver, 48) %>" class="rounded-circle" width="48" height="48">
+          <div class="flex-grow-1">
+            <div class="fw-semibold"><%= fs.receiver.name %></div>
+            <div class="text-muted small"><%= fs.receiver.profession %> · <%= fs.receiver.country %></div>
+          </div>
+          <span class="badge bg-secondary">Pending</span>
+          <%= button_to backoffice_friendship_path(fs), method: :delete,
+                class: "btn btn-outline-secondary btn-sm" do %>
+            <i class="bi bi-x-lg"></i> Cancel
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div class="card">
+  <div class="card-header fw-semibold">
+    <i class="bi bi-people me-2"></i>My friends (<%= @friends.count %>)
+  </div>
+  <% if @friends.any? %>
+    <div class="row g-0">
+      <% @friends.each do |friend| %>
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-3 p-3 border-bottom">
+            <img src="<%= user_avatar_url(friend, 48) %>" class="rounded-circle" width="48" height="48">
+            <div class="flex-grow-1">
+              <%= link_to friend.name, backoffice_member_path(friend), class: "fw-semibold text-decoration-none text-dark" %>
+              <div class="text-muted small"><%= friend.profession %> · <%= friend.country %></div>
+            </div>
+            <% fs = current_user.friendship_with(friend) %>
+            <%= button_to backoffice_friendship_path(fs), method: :delete,
+                  class: "btn btn-outline-secondary btn-sm",
+                  data: { turbo_confirm: "Remove #{friend.name} from your friends?" } do %>
+              <i class="bi bi-person-dash"></i>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card-body text-center text-muted py-5">
+      <i class="bi bi-people fs-1 d-block mb-3 opacity-25"></i>
+      You have no friends yet. <%= link_to "Browse nomads", backoffice_members_path %> to connect.
+    </div>
+  <% end %>
+</div>

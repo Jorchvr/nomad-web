@@ -1,0 +1,159 @@
+<% content_for :title, "#{@profile.name} — Portfolio" %>
+
+<div class="container-fluid py-4 px-3 px-md-4">
+
+  <!-- Breadcrumb -->
+  <div class="mb-3 d-flex align-items-center gap-3">
+    <%= link_to frontoffice_profile_path(@profile),
+          class: "text-decoration-none text-muted small d-inline-flex align-items-center gap-1" do %>
+      <i class="bi bi-arrow-left"></i> Back to profile
+    <% end %>
+    <span class="text-muted small">/</span>
+    <span class="text-muted small fw-semibold"><%= @profile.name %>'s Portfolio</span>
+  </div>
+
+  <% if @photos.empty? %>
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-images fs-1 d-block mb-3" style="color:#c4d4b8;"></i>
+      <p class="mb-0">No projects yet.</p>
+    </div>
+  <% else %>
+    <div class="row g-0" style="min-height:80vh;">
+
+      <!-- Left panel: thumbnail list -->
+      <div class="col-lg-3 col-md-4"
+           style="border-right:1.5px solid #c4d4b8;overflow-y:auto;max-height:85vh;position:sticky;top:1rem;">
+        <div class="p-3 border-bottom" style="background:#f5f0e8;">
+          <p class="mb-0 small fw-semibold" style="color:#2d6044;">
+            <i class="bi bi-images me-1"></i>
+            <%= pluralize(@photos.size, "project") %>
+          </p>
+        </div>
+        <div id="wnw-thumb-list">
+          <% @photos.each_with_index do |photo, i| %>
+            <button type="button"
+                    class="wnw-thumb-btn w-100 text-start border-0 p-0 d-flex align-items-center gap-3 p-3<%= i == 0 ? ' wnw-active' : '' %>"
+                    data-index="<%= i %>"
+                    style="background:<%= i == 0 ? '#e8f0e2' : 'transparent' %>;border-bottom:1px solid #e0e8d8!important;cursor:pointer;transition:background .15s;">
+              <div style="width:62px;height:62px;flex-shrink:0;border-radius:8px;overflow:hidden;border:1.5px solid #c4d4b8;background:#fff;">
+                <%= image_tag photo.image,
+                      style: "width:100%;height:100%;object-fit:cover;",
+                      alt: "" %>
+              </div>
+              <div class="overflow-hidden">
+                <p class="mb-0 fw-semibold text-truncate" style="font-size:.92rem;color:#1a2e20;max-width:160px;">
+                  <%= photo.caption.presence || "Project #{i + 1}" %>
+                </p>
+                <p class="mb-0 text-muted" style="font-size:.78rem;">
+                  <%= photo.created_at.strftime("%b %-d, %Y") %>
+                </p>
+              </div>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Right panel: full image + info -->
+      <div class="col-lg-9 col-md-8 ps-0 ps-md-4 pt-3 pt-md-0">
+        <% @photos.each_with_index do |photo, i| %>
+          <div class="wnw-photo-panel<%= i == 0 ? '' : ' d-none' %>" data-index="<%= i %>">
+            <div class="row g-4 align-items-start">
+
+              <!-- Full image -->
+              <div class="col-xl-8">
+                <div class="rounded-3 overflow-hidden text-center"
+                     style="background:#1a2e20;border:1.5px solid #c4d4b8;">
+                  <%= image_tag photo.image,
+                        style: "max-width:100%;max-height:72vh;object-fit:contain;display:block;margin:0 auto;",
+                        alt: photo.caption.presence || @profile.name %>
+                </div>
+              </div>
+
+              <!-- Info -->
+              <div class="col-xl-4">
+                <div class="card p-4" style="position:sticky;top:1rem;">
+                  <!-- Author -->
+                  <div class="d-flex align-items-center gap-3 mb-4">
+                    <img src="<%= user_avatar_url(@profile, 60) %>"
+                         alt="<%= @profile.name %>"
+                         class="rounded-circle"
+                         style="width:48px;height:48px;object-fit:cover;border:2px solid #c4d4b8;">
+                    <div>
+                      <p class="mb-0 fw-semibold" style="font-family:'Lora',serif;color:#1a2e20;font-size:.95rem;">
+                        <%= @profile.name %>
+                      </p>
+                      <p class="mb-0 text-muted" style="font-size:.82rem;"><%= @profile.profession %></p>
+                    </div>
+                  </div>
+
+                  <!-- Project title / caption -->
+                  <h5 class="fw-semibold mb-2" style="font-family:'Lora',serif;color:#1a2e20;">
+                    <%= photo.caption.presence || "Project #{i + 1}" %>
+                  </h5>
+
+                  <p class="text-muted small mb-4">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    <%= photo.created_at.strftime("%B %-d, %Y") %>
+                  </p>
+
+                  <hr style="border-color:#c4d4b8;">
+
+                  <!-- Nav: prev / next -->
+                  <div class="d-flex gap-2 mt-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary flex-fill wnw-prev"
+                            <%= i == 0 ? 'disabled' : '' %> data-index="<%= i %>">
+                      <i class="bi bi-chevron-left me-1"></i>Prev
+                    </button>
+                    <button type="button" class="btn btn-sm flex-fill wnw-next"
+                            style="background:#3d7a55;color:#fff;border:none;"
+                            <%= i == @photos.size - 1 ? 'disabled' : '' %> data-index="<%= i %>">
+                      Next<i class="bi bi-chevron-right ms-1"></i>
+                    </button>
+                  </div>
+
+                  <!-- Counter -->
+                  <p class="text-center text-muted small mt-2 mb-0">
+                    <%= i + 1 %> / <%= @photos.size %>
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const panels   = document.querySelectorAll(".wnw-photo-panel");
+    const thumbs   = document.querySelectorAll(".wnw-thumb-btn");
+
+    function showPanel(index) {
+      panels.forEach(function (p) { p.classList.add("d-none"); });
+      thumbs.forEach(function (t) {
+        t.classList.remove("wnw-active");
+        t.style.background = "transparent";
+      });
+      const target = document.querySelector(".wnw-photo-panel[data-index='" + index + "']");
+      const thumb  = document.querySelector(".wnw-thumb-btn[data-index='"  + index + "']");
+      if (target) target.classList.remove("d-none");
+      if (thumb)  { thumb.classList.add("wnw-active"); thumb.style.background = "#e8f0e2"; }
+      thumb && thumb.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    thumbs.forEach(function (btn) {
+      btn.addEventListener("click", function () { showPanel(parseInt(btn.dataset.index)); });
+    });
+
+    document.querySelectorAll(".wnw-prev").forEach(function (btn) {
+      btn.addEventListener("click", function () { showPanel(parseInt(btn.dataset.index) - 1); });
+    });
+    document.querySelectorAll(".wnw-next").forEach(function (btn) {
+      btn.addEventListener("click", function () { showPanel(parseInt(btn.dataset.index) + 1); });
+    });
+  });
+</script>

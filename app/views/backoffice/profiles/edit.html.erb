@@ -1,0 +1,262 @@
+<% content_for :page_title, "Edit Profile" %>
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<% end %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">Edit Profile</h4>
+  <%= link_to backoffice_profile_path, class: "btn btn-outline-secondary" do %>
+    <i class="bi bi-arrow-left me-1"></i>Back
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <!-- Avatar preview -->
+  <div class="col-md-3">
+    <div class="card p-4 text-center sticky-top" style="top: 80px;">
+      <img src="<%= user_avatar_url(current_user, 120) %>" alt="avatar" id="avatar-preview"
+           class="rounded-circle mx-auto mb-3 d-block" style="width:100px;height:100px;object-fit:cover;border:3px solid var(--wnw-border);">
+      <div class="fw-semibold"><%= current_user.name %></div>
+      <div class="text-muted small mb-3"><%= current_user.email %></div>
+      <% if current_user.avatar.attached? %>
+        <span class="badge bg-success small mb-2">
+          <i class="bi bi-check-circle me-1"></i>Custom photo
+        </span>
+        <%= button_to avatar_backoffice_profile_path, method: :delete,
+              class: "btn btn-outline-danger btn-sm w-100 mt-1",
+              data: { turbo_confirm: "Delete your profile photo?" } do %>
+          <i class="bi bi-trash me-1"></i>Remove photo
+        <% end %>
+      <% else %>
+        <p class="text-muted" style="font-size:.78rem;">
+          No custom photo. Using <a href="https://gravatar.com" target="_blank">Gravatar</a>.
+        </p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="col-md-9">
+    <%= form_with model: @user, url: backoffice_profile_path, method: :patch, local: true,
+          html: { multipart: true } do |f| %>
+      <% if @user.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0 ps-3">
+            <% @user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-camera me-2"></i>Profile photo</h6>
+        <div class="d-flex align-items-center gap-4">
+          <img src="<%= user_avatar_url(current_user, 80) %>" id="avatar-preview-form"
+               class="rounded-circle flex-shrink-0" style="width:72px;height:72px;object-fit:cover;border:2px solid var(--wnw-border);">
+          <div class="flex-grow-1">
+            <%= f.file_field :avatar, class: "form-control", accept: "image/*",
+                  id: "avatar-input",
+                  onchange: "previewAvatar(this)" %>
+            <div class="form-text">JPG, PNG, WebP · max 5 MB. Saved when you click "Save changes".</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-person me-2"></i>Personal information</h6>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <%= f.label :name, "Full name", class: "form-label" %>
+            <%= f.text_field :name, class: "form-control #{@user.errors[:name].any? ? 'is-invalid' : ''}" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :profession, "Profession / What do you do?", class: "form-label" %>
+            <%= f.text_field :profession, class: "form-control #{@user.errors[:profession].any? ? 'is-invalid' : ''}",
+                  placeholder: "e.g. UX Designer, Developer, Photographer..." %>
+          </div>
+
+          <%# Location %>
+          <div class="col-12">
+            <div class="p-3 rounded-3" style="background:#f8fdf9;border:1.5px solid #c4d4b8;">
+              <h6 class="fw-semibold mb-1 small text-uppercase" style="color:#3d7a55;letter-spacing:.05em;">
+                <i class="bi bi-geo-alt-fill me-1"></i>Your location on the map
+              </h6>
+              <p class="text-muted small mb-3">
+                Enter your city and country. Then <strong>click on the map</strong> to pin your exact location.
+              </p>
+
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <%= f.label :city, "City", class: "form-label small fw-semibold mb-1" %>
+                  <%= f.text_field :city, class: "form-control form-control-sm",
+                        placeholder: "e.g. Mexico City, Madrid..." %>
+                </div>
+                <div class="col-md-6">
+                  <%= f.label :country, "Country", class: "form-label small fw-semibold mb-1" %>
+                  <%= f.text_field :country,
+                        class: "form-control form-control-sm #{@user.errors[:country].any? ? 'is-invalid' : ''}",
+                        placeholder: "e.g. Mexico, Spain..." %>
+                </div>
+              </div>
+
+              <%# Mapa picker %>
+              <div id="location-picker" style="height:320px;border-radius:10px;border:1.5px solid #c4d4b8;"></div>
+
+              <div id="pin-info" class="mt-2 small
+                <%= @user.latitude.present? ? 'text-success' : 'text-muted' %>">
+                <% if @user.latitude.present? %>
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  Pin saved at <%= [@user.city, @user.country].compact.join(', ') %>
+                  <span class="opacity-60">(you can move it by clicking elsewhere)</span>
+                <% else %>
+                  <i class="bi bi-hand-index-thumb me-1"></i>Click on the map to place your pin.
+                <% end %>
+              </div>
+
+              <%# Hidden fields %>
+              <%= f.hidden_field :latitude,  id: "lat_field" %>
+              <%= f.hidden_field :longitude, id: "lng_field" %>
+            </div>
+          </div>
+          <div class="col-12">
+            <%= f.label :bio, "About you", class: "form-label" %>
+            <%= f.text_area :bio, rows: 5, class: "form-control",
+                  placeholder: "Tell the world who you are, what experience you bring, and how you can help..." %>
+            <div class="form-text">This description will appear on your public profile.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-chat-dots me-2"></i>Contact details</h6>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <%= f.label :whatsapp, "WhatsApp", class: "form-label" %>
+            <%= f.text_field :whatsapp, class: "form-control", placeholder: "+1 555 123 4567" %>
+            <div class="form-text">Include country code. e.g. +521234567890</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 mb-4">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-eye me-2"></i>Visibility</h6>
+        <div class="form-check form-switch">
+          <%= f.check_box :published, class: "form-check-input", role: "switch", id: "published_toggle" %>
+          <%= f.label :published, "Appear in the public directory", class: "form-check-label", for: "published_toggle" %>
+        </div>
+        <div class="form-text mt-1">
+          When enabled, anyone can view your profile and contact you.
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit "Save changes", class: "btn btn-primary btn-lg" %>
+        <%= link_to "Cancel", backoffice_profile_path, class: "btn btn-outline-secondary btn-lg" %>
+      </div>
+    <% end %>
+
+    <script>
+      // ── Avatar preview ──
+      function previewAvatar(input) {
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('avatar-preview').src = e.target.result;
+          document.getElementById('avatar-preview-form').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+
+      // ── Map picker ──
+      const savedLat = <%= @user.latitude.present? ? @user.latitude : 'null' %>;
+      const savedLng = <%= @user.longitude.present? ? @user.longitude : 'null' %>;
+
+      const picker = L.map('location-picker', { zoomControl: true }).setView(
+        savedLat ? [savedLat, savedLng] : [20, 0],
+        savedLat ? 10 : 2
+      );
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18
+      }).addTo(picker);
+
+      // Initial marker if coordinates are already saved
+      let pinMarker = savedLat
+        ? L.marker([savedLat, savedLng], { draggable: true }).addTo(picker)
+        : null;
+
+      // If marker is draggable, update coords on drop
+      function bindDrag(m) {
+        m.on('dragend', () => {
+          const pos = m.getLatLng();
+          setCoords(pos.lat, pos.lng);
+        });
+      }
+      if (pinMarker) bindDrag(pinMarker);
+
+      // Map click → move/create pin
+      picker.on('click', e => {
+        const { lat, lng } = e.latlng;
+        if (pinMarker) {
+          picker.removeLayer(pinMarker);
+        }
+        pinMarker = L.marker([lat, lng], { draggable: true }).addTo(picker);
+        bindDrag(pinMarker);
+        setCoords(lat, lng);
+      });
+
+      function setCoords(lat, lng) {
+        document.getElementById('lat_field').value = lat.toFixed(6);
+        document.getElementById('lng_field').value = lng.toFixed(6);
+        const info = document.getElementById('pin-info');
+        info.className = 'mt-2 small text-success';
+        info.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i>Pin placed at <strong>${lat.toFixed(4)}, ${lng.toFixed(4)}</strong> — will be saved when you click "Save changes".`;
+      }
+    </script>
+
+    <!-- Profile links -->
+    <div class="card p-4 mt-4">
+      <h6 class="fw-semibold mb-3"><i class="bi bi-link-45deg me-2"></i>Links on your profile</h6>
+
+      <% if current_user.profile_links.any? %>
+        <div class="mb-3">
+          <% current_user.profile_links.each do |link| %>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-box-arrow-up-right text-primary"></i>
+              <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer"
+                 class="text-decoration-none flex-grow-1 text-truncate">
+                <strong><%= link.label %></strong> — <span class="text-muted"><%= link.url %></span>
+              </a>
+              <%= button_to backoffice_profile_link_path(link), method: :delete,
+                    class: "btn btn-link btn-sm text-danger p-0",
+                    data: { turbo_confirm: "Delete this link?" } do %>
+                <i class="bi bi-trash small"></i>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= form_with model: ProfileLink.new, url: backoffice_profile_links_path, local: true do |f| %>
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <%= f.label :label, "Label", class: "form-label small mb-1" %>
+            <%= f.text_field :label, class: "form-control form-control-sm",
+                  placeholder: "e.g. Portfolio, LinkedIn, GitHub..." %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :url, "URL", class: "form-label small mb-1" %>
+            <%= f.url_field :url, class: "form-control form-control-sm",
+                  placeholder: "https://..." %>
+          </div>
+          <div class="col-md-2">
+            <%= f.submit "Add", class: "btn btn-outline-primary btn-sm w-100" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

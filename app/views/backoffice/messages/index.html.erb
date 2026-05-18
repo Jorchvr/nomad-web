@@ -1,0 +1,74 @@
+<% content_for :page_title, "Messages" %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="fw-bold mb-0" style="font-family:'Lora',serif;">
+      <i class="bi bi-chat-dots-fill me-2" style="color:#3d7a55;"></i>Inbox
+    </h4>
+    <p class="text-muted small mb-0 mt-1">
+      <%= @unread_total > 0 ? "#{@unread_total} unread message#{'s' if @unread_total != 1}" : "All messages read" %>
+    </p>
+  </div>
+</div>
+
+<% if @conversations.empty? %>
+  <div class="card p-5 text-center">
+    <i class="bi bi-chat-square-dots fs-1 mb-3 d-block" style="color:#c4d4b8;"></i>
+    <h5 class="fw-semibold mb-2">No messages yet</h5>
+    <p class="text-muted mb-4">Find a nomad in the directory and start a conversation.</p>
+    <%= link_to "Browse members", backoffice_members_path, class: "btn btn-primary" %>
+  </div>
+<% else %>
+  <div class="card p-0 overflow-hidden">
+    <% @conversations.each_with_index do |conv, i| %>
+      <%= link_to backoffice_message_conversation_path(conv[:user].id),
+            class: "text-decoration-none d-block" do %>
+        <div class="d-flex align-items-center gap-3 p-3 conv-row<%= conv[:unread] > 0 ? ' conv-unread' : '' %>"
+             style="<%= i < @conversations.size - 1 ? 'border-bottom:1px solid var(--wnw-border);' : '' %>">
+          <!-- Avatar -->
+          <div style="position:relative;flex-shrink:0;">
+            <img src="<%= user_avatar_url(conv[:user], 48) %>"
+                 alt="<%= conv[:user].name %>"
+                 class="rounded-circle"
+                 style="width:48px;height:48px;object-fit:cover;border:2px solid var(--wnw-border);">
+            <% if conv[:unread] > 0 %>
+              <span style="position:absolute;top:-3px;right:-3px;width:18px;height:18px;
+                           background:#3d7a55;border-radius:50%;border:2px solid white;
+                           font-size:.65rem;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">
+                <%= conv[:unread] > 9 ? '9+' : conv[:unread] %>
+              </span>
+            <% end %>
+          </div>
+          <!-- Info -->
+          <div class="flex-grow-1 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-baseline">
+              <span class="fw-semibold<%= conv[:unread] > 0 ? ' text-dark' : ' text-muted' %>"
+                    style="font-size:.95rem;">
+                <%= conv[:user].name %>
+              </span>
+              <span class="text-muted ms-2 flex-shrink-0" style="font-size:.75rem;">
+                <%= conv[:last_message].created_at.strftime("%-d %b") %>
+              </span>
+            </div>
+            <p class="mb-0 text-truncate<%= conv[:unread] > 0 ? ' fw-semibold' : ' text-muted' %>"
+               style="font-size:.85rem;">
+              <% if conv[:last_message].sender_id == current_user.id %>
+                <span class="text-muted me-1">You:</span>
+              <% end %>
+              <%= conv[:last_message].body %>
+            </p>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<style>
+  .conv-row { transition: background .13s; }
+  .conv-row:hover { background: var(--wnw-primary-light); }
+  .conv-unread { background: #f0f7f2; }
+  [data-bs-theme="dark"] .conv-unread { background: #1a2f1e; }
+  [data-bs-theme="dark"] .conv-row:hover { background: rgba(61,122,85,.15); }
+  [data-bs-theme="dark"] .fw-semibold.text-dark { color: #d4e8d4 !important; }
+</style>

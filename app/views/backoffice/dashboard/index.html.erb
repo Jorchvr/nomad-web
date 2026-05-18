@@ -1,0 +1,90 @@
+<% content_for :page_title, "Dashboard" %>
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <span class="wnw-logo wnw-logo-md"></span>
+  <div>
+    <h4 class="fw-bold mb-0">Hello, <%= current_user.name %> 👋</h4>
+    <p class="text-muted mb-0">Welcome to your dashboard.</p>
+  </div>
+</div>
+
+<!-- Profile status -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card p-4 h-100">
+      <div class="d-flex align-items-center gap-3">
+        <img src="<%= user_avatar_url(current_user, 64) %>" alt="avatar"
+             class="rounded-circle" style="width:56px;height:56px;object-fit:cover;">
+        <div>
+          <div class="fw-semibold"><%= current_user.name %></div>
+          <div class="text-muted small"><%= current_user.profession %></div>
+          <span class="badge <%= current_user.published? ? 'bg-success' : 'bg-warning text-dark' %> mt-1">
+            <%= current_user.published? ? "Published" : "Hidden" %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card p-4 h-100">
+      <div class="text-muted small mb-1"><i class="bi bi-geo-alt me-1"></i>Country</div>
+      <div class="fw-semibold fs-5"><%= current_user.country %></div>
+      <div class="text-muted small mt-2"><i class="bi bi-envelope me-1"></i><%= current_user.email %></div>
+      <% if current_user.whatsapp.present? %>
+        <div class="text-muted small"><i class="bi bi-whatsapp me-1"></i><%= current_user.whatsapp %></div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card p-4 h-100 d-flex flex-column justify-content-between">
+      <div>
+        <div class="text-muted small mb-1">Directory visibility</div>
+        <% if current_user.published? %>
+          <p class="text-success mb-2"><i class="bi bi-check-circle-fill me-1"></i>Your profile is publicly visible</p>
+        <% else %>
+          <p class="text-warning mb-2"><i class="bi bi-eye-slash me-1"></i>Your profile is hidden</p>
+        <% end %>
+      </div>
+      <%= link_to edit_backoffice_profile_path, class: "btn btn-outline-primary btn-sm" do %>
+        <i class="bi bi-toggle-on me-1"></i>Change visibility
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Quick actions -->
+<h6 class="text-muted fw-semibold mb-3">Quick actions</h6>
+<div class="row g-3">
+  <div class="col-md-3">
+    <%= link_to edit_backoffice_profile_path, class: "card p-3 text-decoration-none text-dark text-center" do %>
+      <i class="bi bi-pencil-square fs-3 text-primary mb-2 d-block"></i>
+      <div class="fw-semibold small">Edit Profile</div>
+      <div class="text-muted" style="font-size:.8rem;">Update your information</div>
+    <% end %>
+  </div>
+  <div class="col-md-3">
+    <%= link_to backoffice_profile_path, class: "card p-3 text-decoration-none text-dark text-center" do %>
+      <i class="bi bi-person-circle fs-3 text-primary mb-2 d-block"></i>
+      <div class="fw-semibold small">View My Profile</div>
+      <div class="text-muted" style="font-size:.8rem;">Preview</div>
+    <% end %>
+  </div>
+  <div class="col-md-3">
+    <%= link_to root_path, class: "card p-3 text-decoration-none text-dark text-center" do %>
+      <i class="bi bi-people fs-3 text-primary mb-2 d-block"></i>
+      <div class="fw-semibold small">Public Directory</div>
+      <div class="text-muted" style="font-size:.8rem;">Browse all nomads</div>
+    <% end %>
+  </div>
+  <div class="col-md-3">
+    <%= link_to current_user.published? ? frontoffice_profile_path(current_user) : "#",
+          class: "card p-3 text-decoration-none text-dark text-center #{!current_user.published? ? 'opacity-50' : ''}",
+          target: "_blank" do %>
+      <i class="bi bi-box-arrow-up-right fs-3 text-primary mb-2 d-block"></i>
+      <div class="fw-semibold small">My Public Profile</div>
+      <div class="text-muted" style="font-size:.8rem;"><%= current_user.published? ? "Open in new tab" : "Publish your profile first" %></div>
+    <% end %>
+  </div>
+</div>

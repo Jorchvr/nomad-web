@@ -1,0 +1,87 @@
+<% content_for :page_title, @forum.title %>
+
+<div class="d-flex align-items-center gap-2 mb-4">
+  <%= link_to backoffice_forums_path, class: "btn btn-sm btn-outline-secondary" do %>
+    <i class="bi bi-arrow-left"></i>
+  <% end %>
+  <h4 class="fw-bold mb-0 flex-grow-1"><%= @forum.title %></h4>
+  <% if @forum.user == current_user %>
+    <%= button_to backoffice_forum_path(@forum), method: :delete,
+          class: "btn btn-sm btn-outline-danger",
+          data: { turbo_confirm: "Delete this forum and all its replies?" } do %>
+      <i class="bi bi-trash"></i>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @forum.body.present? %>
+  <div class="card p-4 mb-4">
+    <div class="d-flex gap-3">
+      <img src="<%= user_avatar_url(@forum.user, 48) %>" class="rounded-circle flex-shrink-0" width="48" height="48">
+      <div>
+        <div class="fw-semibold">
+          <%= link_to @forum.user.name, backoffice_member_path(@forum.user),
+                class: "text-decoration-none text-dark" %>
+          <span class="text-muted small fw-normal ms-2">
+            <%= time_ago_in_words(@forum.created_at) %> ago
+          </span>
+        </div>
+        <div class="mt-2 text-muted lh-sm"><%= simple_format(@forum.body) %></div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<div class="mb-2 text-muted small fw-semibold">
+  <%= @posts.count %> <%= @posts.count == 1 ? "reply" : "replies" %>
+</div>
+
+<div class="card mb-4">
+  <% if @posts.any? %>
+    <% @posts.each_with_index do |post, i| %>
+      <div id="post-<%= post.id %>" class="p-4 <%= i < @posts.count - 1 ? 'border-bottom' : '' %>">
+        <div class="d-flex gap-3">
+          <img src="<%= user_avatar_url(post.user, 40) %>" class="rounded-circle flex-shrink-0" width="40" height="40">
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <span class="fw-semibold">
+                  <%= link_to post.user.name, backoffice_member_path(post.user),
+                        class: "text-decoration-none text-dark" %>
+                </span>
+                <span class="text-muted small ms-2"><%= time_ago_in_words(post.created_at) %> ago</span>
+              </div>
+              <% if post.user == current_user %>
+                <%= button_to backoffice_forum_post_path(@forum, post), method: :delete,
+                      class: "btn btn-link btn-sm text-muted p-0",
+                      data: { turbo_confirm: "Delete this reply?" } do %>
+                  <i class="bi bi-trash small"></i>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="mt-1 lh-sm"><%= simple_format(post.body) %></div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="p-4 text-center text-muted">
+      <i class="bi bi-chat fs-3 d-block mb-2 opacity-25"></i>
+      Be the first to reply.
+    </div>
+  <% end %>
+</div>
+
+<div class="card p-4">
+  <h6 class="fw-semibold mb-3">Your reply</h6>
+  <%= form_with model: [@forum, @new_post], url: backoffice_forum_posts_path(@forum) do |f| %>
+    <div class="d-flex gap-3">
+      <img src="<%= user_avatar_url(current_user, 40) %>" class="rounded-circle flex-shrink-0" width="40" height="40">
+      <div class="flex-grow-1">
+        <%= f.text_area :body, class: "form-control mb-2", rows: 3,
+              placeholder: "Write your reply..." %>
+        <%= f.submit "Post reply", class: "btn btn-primary btn-sm" %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,41 @@
+<% content_for :page_title, "New forum" %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <%= link_to backoffice_forums_path, class: "btn btn-sm btn-outline-secondary" do %>
+        <i class="bi bi-arrow-left"></i>
+      <% end %>
+      <h4 class="fw-bold mb-0">Create new forum</h4>
+    </div>
+
+    <div class="card p-4">
+      <%= form_with model: @forum, url: backoffice_forums_path do |f| %>
+        <% if @forum.errors.any? %>
+          <div class="alert alert-danger">
+            <% @forum.errors.full_messages.each do |msg| %>
+              <div><i class="bi bi-exclamation-circle me-1"></i><%= msg %></div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= f.label :title, "Title", class: "form-label fw-semibold" %>
+          <%= f.text_field :title, class: "form-control", placeholder: "What is this forum about?",
+                maxlength: 150 %>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :body, "Description (optional)", class: "form-label fw-semibold" %>
+          <%= f.text_area :body, class: "form-control", rows: 5,
+                placeholder: "Explain the topic or add some context..." %>
+        </div>
+
+        <div class="d-flex gap-2">
+          <%= f.submit "Post forum", class: "btn btn-primary" %>
+          <%= link_to "Cancel", backoffice_forums_path, class: "btn btn-outline-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

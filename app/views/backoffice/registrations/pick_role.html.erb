@@ -1,0 +1,135 @@
+<div style="max-width:860px;width:95vw;">
+  <div class="text-center mb-5">
+    <span class="wnw-logo wnw-logo-md d-block mx-auto mb-3"></span>
+    <h3 class="fw-bold" style="font-family:'Lora',serif;">Join World Nomad Web</h3>
+    <p class="text-muted">Choose the account type that fits you best</p>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- NOMAD -->
+    <div class="col-md-6">
+      <%= link_to backoffice_register_path(role: "nomad"), class: "text-decoration-none d-block h-100" do %>
+        <div class="card p-4 p-md-5 h-100 role-card" style="border-width:2px!important;cursor:pointer;transition:all .2s;">
+          <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+                 style="width:56px;height:56px;background:#e8f5ee;">
+              <i class="bi bi-globe2 fs-2" style="color:#3d7a55;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="font-family:'Lora',serif;color:#1a2e20;">
+              I'm a Digital Nomad
+            </h4>
+            <p class="text-muted mb-0" style="font-size:.92rem;">
+              Freelancers, remote workers, and location-independent professionals
+            </p>
+          </div>
+
+          <ul class="list-unstyled mb-4 flex-grow-1" style="font-size:.9rem;">
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#3d7a55;"></i>
+              <span>Create a public profile visible to clients worldwide</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#3d7a55;"></i>
+              <span>Showcase your portfolio and past projects</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#3d7a55;"></i>
+              <span>Publish travel stories about your nomad experiences</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#3d7a55;"></i>
+              <span>Appear on the interactive world map</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#3d7a55;"></i>
+              <span>Connect with other nomads, make friends, join forums</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#3d7a55;"></i>
+              <span>Receive messages and inquiries from potential clients</span>
+            </li>
+          </ul>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="badge rounded-pill px-3 py-2" style="background:#e8f5ee;color:#2d6044;border:1px solid #b2d8c0;font-size:.82rem;">
+              Full access
+            </span>
+            <span class="fw-semibold d-flex align-items-center gap-1" style="color:#3d7a55;">
+              Get started <i class="bi bi-arrow-right"></i>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="col-md-6">
+      <%= link_to backoffice_register_path(role: "client"), class: "text-decoration-none d-block h-100" do %>
+        <div class="card p-4 p-md-5 h-100 role-card" style="border-width:2px!important;cursor:pointer;transition:all .2s;">
+          <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+                 style="width:56px;height:56px;background:#f0ece3;">
+              <i class="bi bi-briefcase-fill fs-2" style="color:#8b6340;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="font-family:'Lora',serif;color:#1a2e20;">
+              I'm Looking for Talent
+            </h4>
+            <p class="text-muted mb-0" style="font-size:.92rem;">
+              Businesses, entrepreneurs, and teams who need remote professionals
+            </p>
+          </div>
+
+          <ul class="list-unstyled mb-4 flex-grow-1" style="font-size:.9rem;">
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#8b6340;"></i>
+              <span>Browse all nomad profiles and portfolios for free</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#8b6340;"></i>
+              <span>Send direct messages to any member you're interested in</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#8b6340;"></i>
+              <span>Manage all your conversations from a personal inbox</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#8b6340;"></i>
+              <span>No public profile required — completely private account</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check-circle-fill mt-1 flex-shrink-0" style="color:#8b6340;"></i>
+              <span>Quick sign-up — just name, email, and password</span>
+            </li>
+          </ul>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="badge rounded-pill px-3 py-2" style="background:#f5f0e8;color:#8b6340;border:1px solid #ddd0b8;font-size:.82rem;">
+              Contact only
+            </span>
+            <span class="fw-semibold d-flex align-items-center gap-1" style="color:#8b6340;">
+              Get started <i class="bi bi-arrow-right"></i>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <p class="text-center text-muted small mt-4 mb-0">
+    Already have an account?
+    <%= link_to "Sign in", backoffice_login_path, class: "fw-semibold text-decoration-none" %>
+    &nbsp;·&nbsp;
+    <%= link_to "← View directory", root_path, class: "text-muted" %>
+  </p>
+</div>
+
+<style>
+  .role-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 32px rgba(45,96,68,.16) !important;
+    border-color: var(--wnw-primary) !important;
+  }
+  [data-bs-theme="dark"] .role-card:hover { border-color: #3d7a55 !important; }
+</style>
