@@ -157,6 +157,34 @@
       </div>
     <% end %>
 
+    <!-- Two-Factor Authentication -->
+    <div class="card p-4 mt-4" style="border-color:<%= current_user.otp_enabled? ? '#b2d8c0' : 'var(--wnw-border)' %> !important;">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+          <h6 class="fw-semibold mb-1">
+            <i class="bi bi-shield-lock-fill me-2" style="color:<%= current_user.otp_enabled? ? '#3d7a55' : '#8b9a8e' %>;"></i>
+            Two-Factor Authentication
+          </h6>
+          <% if current_user.otp_enabled? %>
+            <p class="text-success small mb-0"><i class="bi bi-check-circle-fill me-1"></i>Active — your account is protected with Google Authenticator.</p>
+          <% else %>
+            <p class="text-muted small mb-0">Add an extra layer of security. You'll need a 6-digit code from Google Authenticator each time you log in.</p>
+          <% end %>
+        </div>
+        <% if current_user.otp_enabled? %>
+          <%= button_to backoffice_two_factor_disable_path, method: :delete,
+                class: "btn btn-outline-danger btn-sm",
+                data: { turbo_confirm: "Disable two-factor authentication? Your account will be less secure." } do %>
+            <i class="bi bi-shield-x me-1"></i>Disable 2FA
+          <% end %>
+        <% else %>
+          <%= link_to backoffice_two_factor_setup_path, class: "btn btn-outline-success btn-sm" do %>
+            <i class="bi bi-shield-check me-1"></i>Enable 2FA
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
     <script>
       // ── Avatar preview ──
       function previewAvatar(input) {

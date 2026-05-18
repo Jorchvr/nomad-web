@@ -15,6 +15,11 @@ Rails.application.routes.draw do
     root "dashboard#index"
     get  "tutorial", to: "dashboard#tutorial", as: :tutorial
     get  "confirm",  to: "confirmations#show", as: :confirm_email
+    get  "two-factor/verify",  to: "two_factor#new",     as: :two_factor_verify
+    post "two-factor/verify",  to: "two_factor#create"
+    get  "two-factor/setup",   to: "two_factor#setup",   as: :two_factor_setup
+    post "two-factor/enable",  to: "two_factor#enable",  as: :two_factor_enable
+    delete "two-factor/disable", to: "two_factor#disable", as: :two_factor_disable
     get  "login",    to: "sessions#new",           as: :login
     post "login",    to: "sessions#create"
     delete "logout", to: "sessions#destroy",        as: :logout

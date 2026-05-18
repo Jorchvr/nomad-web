@@ -1,0 +1,28 @@
+<div class="auth-bg auth-sidebar-hidden d-flex align-items-center justify-content-center" style="min-height:100vh;">
+  <div class="card p-5 shadow-lg" style="width:100%;max-width:420px;border-radius:18px;">
+    <div class="text-center mb-4">
+      <span class="wnw-logo wnw-logo-md d-inline-block mb-3"></span>
+      <h4 class="fw-bold mb-1">Two-Factor Authentication</h4>
+      <p class="text-muted small">Open Google Authenticator and enter the 6-digit code.</p>
+    </div>
+
+    <%= form_with url: backoffice_two_factor_verify_path, method: :post, local: true do |f| %>
+      <div class="mb-4">
+        <%= f.text_field :otp_code,
+              class: "form-control form-control-lg text-center fw-bold ls-wider",
+              placeholder: "000000",
+              autocomplete: "one-time-code",
+              inputmode: "numeric",
+              maxlength: 6,
+              autofocus: true,
+              style: "letter-spacing:.5rem;font-size:1.8rem;" %>
+      </div>
+
+      <%= f.submit "Verify", class: "btn btn-primary w-100 py-2 fw-semibold" %>
+    <% end %>
+
+    <div class="text-center mt-3">
+      <%= link_to "← Back to login", backoffice_login_path, class: "text-muted small" %>
+    </div>
+  </div>
+</div>

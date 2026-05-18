@@ -1,0 +1,53 @@
+<% content_for :page_title, "Set up Two-Factor Authentication" %>
+
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="card p-4 p-md-5">
+      <h4 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill me-2 text-primary"></i>Set up Two-Factor Authentication</h4>
+      <p class="text-muted mb-4">Scan the QR code with Google Authenticator, then enter the 6-digit code to confirm.</p>
+
+      <div class="steps mb-4">
+        <div class="d-flex gap-3 mb-3">
+          <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold"
+               style="width:32px;height:32px;background:var(--wnw-primary-light);color:var(--wnw-primary);">1</div>
+          <div>
+            <div class="fw-semibold small">Download Google Authenticator</div>
+            <div class="text-muted small">Available on iOS and Android.</div>
+          </div>
+        </div>
+        <div class="d-flex gap-3 mb-3">
+          <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold"
+               style="width:32px;height:32px;background:var(--wnw-primary-light);color:var(--wnw-primary);">2</div>
+          <div>
+            <div class="fw-semibold small">Scan this QR code</div>
+            <div class="text-muted small">Open the app → tap "+" → "Scan a QR code".</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mb-4 p-3 rounded-3" style="background:#f5f0e8;border:1.5px solid var(--wnw-border);">
+        <%= raw @qr_svg %>
+      </div>
+
+      <%= form_with url: backoffice_two_factor_enable_path, method: :post, local: true do |f| %>
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">Enter the 6-digit code to confirm</label>
+          <%= f.text_field :otp_code,
+                class: "form-control form-control-lg text-center fw-bold",
+                placeholder: "000000",
+                autocomplete: "one-time-code",
+                inputmode: "numeric",
+                maxlength: 6,
+                style: "letter-spacing:.5rem;font-size:1.6rem;" %>
+        </div>
+        <%= f.submit "Enable Two-Factor Authentication", class: "btn btn-primary w-100 py-2 fw-semibold" %>
+      <% end %>
+
+      <div class="text-center mt-3">
+        <%= link_to edit_backoffice_profile_path, class: "text-muted small" do %>
+          Cancel
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

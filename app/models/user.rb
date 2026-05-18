@@ -45,6 +45,21 @@ class User < ApplicationRecord
 
   before_save { self.email = email.downcase }
 
+  def generate_otp_secret!
+    update_column(:otp_secret, ROTP::Base32.random)
+  end
+
+  def otp_provisioning_uri(issuer = "World Nomad Web")
+    totp = ROTP::TOTP.new(otp_secret, issuer: issuer)
+    totp.provisioning_uri(email)
+  end
+
+  def verify_otp(code)
+    return false if otp_secret.blank?
+    totp = ROTP::TOTP.new(otp_secret)
+    totp.verify(code.to_s.strip, drift_behind: 30, drift_ahead: 30)
+  end
+
   def generate_confirmation_token!
     self.confirmation_token = SecureRandom.urlsafe_base64(32)
     save!(validate: false)
