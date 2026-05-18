@@ -30,6 +30,9 @@ gem "rqrcode", "~> 2.2"
 # Email via Resend HTTP API
 gem "resend", "~> 0.12"
 
+# Rate limiting and brute-force protection
+gem "rack-attack"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
