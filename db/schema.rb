@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_030740) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_18_200000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -105,11 +105,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_030740) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.boolean "admin", default: false, null: false
     t.text "bio"
     t.string "city"
+    t.string "confirmation_token"
     t.string "country", null: false
     t.datetime "created_at", null: false
     t.string "email", null: false
+    t.boolean "email_confirmed", default: false, null: false
     t.float "latitude"
     t.float "longitude"
     t.string "name", null: false
@@ -118,7 +121,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_030740) do
     t.boolean "published", default: false, null: false
     t.string "role", default: "nomad", null: false
     t.datetime "updated_at", null: false
+    t.boolean "verified", default: false, null: false
     t.string "whatsapp"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

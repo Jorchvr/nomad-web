@@ -83,7 +83,12 @@
                 <img src="<%= user_avatar_url(profile, 80) %>" alt="<%= profile.name %>"
                      class="avatar-circle flex-shrink-0">
                 <div class="overflow-hidden">
-                  <div class="fw-semibold text-dark text-truncate"><%= profile.name %></div>
+                  <div class="fw-semibold text-dark text-truncate">
+                    <%= profile.name %>
+                    <% if profile.verified? %>
+                      <i class="bi bi-patch-check-fill" style="color:#3d7a55;font-size:.9rem;" title="Verified"></i>
+                    <% end %>
+                  </div>
                   <div class="text-muted small text-truncate"><%= profile.profession %></div>
                 </div>
               </div>

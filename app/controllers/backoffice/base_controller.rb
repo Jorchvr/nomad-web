@@ -14,5 +14,10 @@ module Backoffice
       redirect_to backoffice_messages_path,
         alert: "That section is only available for Nomad members."
     end
+
+    def require_admin!
+      return if current_user&.admin?
+      redirect_to backoffice_root_path, alert: "Access denied."
+    end
   end
 end

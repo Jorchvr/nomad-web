@@ -16,13 +16,15 @@ module Backoffice
       @user = User.new(user_params)
       @role = @user.role
       if @user.save
+        @user.generate_confirmation_token!
+        UserMailer.confirmation_email(@user).deliver_later
         session[:user_id] = @user.id
         if @user.nomad?
           redirect_to edit_backoffice_profile_path,
-            notice: "Account created! Complete your profile to appear in the directory."
+            notice: "Account created! Check your email to confirm your address."
         else
           redirect_to backoffice_messages_path,
-            notice: "Account created! Browse the directory and send messages to nomads."
+            notice: "Account created! Check your email to confirm your address."
         end
       else
         render :new, status: :unprocessable_entity

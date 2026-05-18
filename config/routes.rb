@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   namespace :backoffice do
     root "dashboard#index"
     get  "tutorial", to: "dashboard#tutorial", as: :tutorial
+    get  "confirm",  to: "confirmations#show", as: :confirm_email
     get  "login",    to: "sessions#new",           as: :login
     post "login",    to: "sessions#create"
     delete "logout", to: "sessions#destroy",        as: :logout
@@ -28,7 +29,9 @@ Rails.application.routes.draw do
     resources :messages, only: [:index, :create]
     get 'messages/:user_id', to: 'messages#show', as: :message_conversation
     resources :friendships,   only: [:index, :create, :update, :destroy]
-    resources :members,       only: [:index, :show]
+    resources :members, only: [:index, :show] do
+      patch :verify, on: :member
+    end
     resources :forums do
       resources :posts, only: [:create, :destroy], module: :forums
     end

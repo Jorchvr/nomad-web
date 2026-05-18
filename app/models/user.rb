@@ -41,8 +41,18 @@ class User < ApplicationRecord
 
   def nomad?  = role == "nomad"
   def client? = role == "client"
+  def admin?  = admin == true
 
   before_save { self.email = email.downcase }
+
+  def generate_confirmation_token!
+    self.confirmation_token = SecureRandom.urlsafe_base64(32)
+    save!(validate: false)
+  end
+
+  def confirm_email!
+    update_columns(email_confirmed: true, confirmation_token: nil)
+  end
 
   scope :published, -> { where(published: true) }
   scope :by_country, ->(country) { where(country: country) }

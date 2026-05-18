@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <body style="margin:0;padding:0;background:#f5f0e8;font-family:'Inter',Arial,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center" style="padding:40px 16px;">
+          <table width="520" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;border:1.5px solid #c4d4b8;overflow:hidden;">
+
+            <tr>
+              <td style="background:#1e3828;padding:28px 32px;text-align:center;">
+                <div style="font-size:1.3rem;font-weight:700;color:#fff;font-family:Georgia,serif;letter-spacing:.5px;">
+                  🌍 World Nomad Web
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:36px 32px 28px;">
+                <h2 style="margin:0 0 12px;color:#1a2e20;font-size:1.4rem;">Hi <%= @user.name %>,</h2>
+                <p style="color:#4a6555;line-height:1.6;margin:0 0 24px;">
+                  Thanks for joining World Nomad Web! Please confirm your email address to activate your account and start connecting with nomads around the world.
+                </p>
+
+                <div style="text-align:center;margin:28px 0;">
+                  <a href="<%= @confirmation_url %>"
+                     style="background:#3d7a55;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:1rem;display:inline-block;">
+                    ✓ Confirm my email
+                  </a>
+                </div>
+
+                <p style="color:#8b9a8e;font-size:.87rem;line-height:1.6;margin:0;">
+                  If the button doesn't work, copy and paste this link in your browser:<br>
+                  <a href="<%= @confirmation_url %>" style="color:#3d7a55;word-break:break-all;"><%= @confirmation_url %></a>
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="background:#f5f0e8;padding:16px 32px;text-align:center;border-top:1px solid #c4d4b8;">
+                <p style="color:#8b9a8e;font-size:.8rem;margin:0;">
+                  If you didn't create an account, you can safely ignore this email.
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
