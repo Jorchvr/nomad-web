@@ -14,7 +14,8 @@ Rails.application.routes.draw do
   namespace :backoffice do
     root "dashboard#index"
     get  "tutorial", to: "dashboard#tutorial", as: :tutorial
-    get  "confirm",  to: "confirmations#show", as: :confirm_email
+    get  "confirm",       to: "confirmations#show",   as: :confirm_email
+    post "resend-confirmation", to: "confirmations#resend", as: :resend_confirmation
     get  "two-factor/verify",  to: "two_factor#new",     as: :two_factor_verify
     post "two-factor/verify",  to: "two_factor#create"
     get  "two-factor/setup",   to: "two_factor#setup",   as: :two_factor_setup

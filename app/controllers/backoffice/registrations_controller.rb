@@ -17,7 +17,7 @@ module Backoffice
       @role = @user.role
       if @user.save
         @user.generate_confirmation_token!
-        UserMailer.confirmation_email(@user).deliver_later
+        UserMailer.confirmation_email(@user).deliver_now
         session[:user_id] = @user.id
         if @user.nomad?
           redirect_to edit_backoffice_profile_path,
