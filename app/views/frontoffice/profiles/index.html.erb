@@ -173,9 +173,15 @@
     </div>
 
     <div class="text-center mt-5">
-      <%= link_to "Join the community", backoffice_register_path,
-            class: "btn btn-primary btn-lg px-5",
-            style: "border-radius:50px;font-weight:600;" %>
+      <% if current_user %>
+        <%= link_to "Go to Dashboard", backoffice_root_path,
+              class: "btn btn-primary btn-lg px-5",
+              style: "border-radius:50px;font-weight:600;" %>
+      <% else %>
+        <%= link_to "Join the community", backoffice_register_path,
+              class: "btn btn-primary btn-lg px-5",
+              style: "border-radius:50px;font-weight:600;" %>
+      <% end %>
     </div>
   </div>
 </section>

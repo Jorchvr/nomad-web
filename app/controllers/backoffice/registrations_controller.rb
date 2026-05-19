@@ -3,7 +3,7 @@ module Backoffice
     layout "backoffice"
 
     def new
-      redirect_to backoffice_root_path if current_user
+      redirect_to(backoffice_root_path) and return if current_user
       @oauth_data = session[:oauth_data]
       if params[:role].in?(%w[nomad client])
         @role = params[:role]
