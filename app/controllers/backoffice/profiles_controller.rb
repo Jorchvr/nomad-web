@@ -19,12 +19,12 @@ module Backoffice
       end
     end
 
-    private
-
     def destroy_avatar
       current_user.avatar.purge
       redirect_to edit_backoffice_profile_path, notice: "Profile photo deleted"
     end
+
+    private
 
     def profile_params
       params.require(:user).permit(:name, :country, :city, :latitude, :longitude,

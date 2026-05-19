@@ -12,7 +12,7 @@ module Backoffice
         if user.webauthn_credentials.any?
           session[:pending_webauthn_user_id] = user.id
           redirect_to backoffice_webauthn_verify_path
-        elsif user.otp_enabled? && !user.admin?
+        elsif user.otp_enabled?
           session[:pending_2fa_user_id] = user.id
           redirect_to backoffice_two_factor_verify_path
         elsif user.admin?
