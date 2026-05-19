@@ -37,7 +37,7 @@ gem "omniauth-google-oauth2",      "~> 1.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 
 # Email via Resend HTTP API
-gem "resend", "~> 0.12"
+gem "resend", "~> 1.3"
 
 # Rate limiting and brute-force protection
 gem "rack-attack"
