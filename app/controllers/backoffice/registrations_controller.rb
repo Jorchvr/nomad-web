@@ -30,7 +30,11 @@ module Backoffice
         session.delete(:oauth_data)
         unless @oauth_data
           @user.generate_confirmation_token!
-          UserMailer.confirmation_email(@user).deliver_now
+          begin
+            UserMailer.confirmation_email(@user).deliver_now
+          rescue => e
+            Rails.logger.error "Confirmation email failed: #{e.message}"
+          end
         end
         session[:user_id] = @user.id
         if @user.nomad?
