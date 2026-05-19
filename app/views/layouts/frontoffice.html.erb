@@ -167,6 +167,16 @@
         <span class="wnw-logo wnw-logo-lg d-block mx-auto mb-3"></span>
         <p class="mb-1 text-light fw-semibold fs-5">World Nomad Web</p>
         <small>Connecting talent from every corner of the world</small>
+        <hr style="border-color:#2d5a3d;max-width:180px;margin:1.5rem auto;">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-3" style="font-size:.82rem;">
+          <%= link_to "Browse nomads", frontoffice_profiles_path, style: "color:#86c99a;text-decoration:none;" %>
+          <%= link_to "Travel Stories", frontoffice_travel_stories_path, style: "color:#86c99a;text-decoration:none;" %>
+          <%= link_to "Who do you need?", frontoffice_professions_path, style: "color:#86c99a;text-decoration:none;" %>
+          <%= link_to "Join", backoffice_register_path, style: "color:#86c99a;text-decoration:none;" %>
+        </div>
+        <small class="d-block" style="color:rgba(255,255,255,.3);font-size:.78rem;">
+          &copy; <%= Time.current.year %> World Nomad Web &mdash; All rights reserved.
+        </small>
       </div>
     </footer>
 

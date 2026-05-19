@@ -28,7 +28,8 @@ module Backoffice
 
     def profile_params
       params.require(:user).permit(:name, :country, :city, :latitude, :longitude,
-                                   :profession, :bio, :whatsapp, :published, :avatar)
+                                   :profession, :bio, :whatsapp, :published, :avatar,
+                                   :specialties)
     end
   end
 end

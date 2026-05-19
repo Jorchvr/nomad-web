@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       get :portfolio, on: :member
     end
     resources :travel_stories, only: [:index, :show]
+    get 'professions', to: 'professions#index', as: :professions
   end
 
   # OmniAuth callbacks (must be outside namespace — OAuth providers redirect here)

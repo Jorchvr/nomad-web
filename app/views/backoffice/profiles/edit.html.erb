@@ -126,8 +126,70 @@
                   placeholder: "Tell the world who you are, what experience you bring, and how you can help..." %>
             <div class="form-text">This description will appear on your public profile.</div>
           </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">What do you specifically offer?</label>
+            <div class="form-text mb-2">
+              Add the specific services or products you can deliver — in simple terms anyone can understand.
+              E.g. <em>Web applications, Online stores, Mobile apps, Logo design…</em>
+            </div>
+
+            <%# Tag chip UI %>
+            <div id="spec-tags" class="d-flex flex-wrap gap-2 mb-2">
+              <% (@user.specialties.to_s.split("\n").map(&:strip).reject(&:empty?)).each do |s| %>
+                <span class="spec-tag badge d-inline-flex align-items-center gap-1 px-3 py-2"
+                      style="background:#e8f5ee;color:#2d6044;border:1px solid #b2d8c0;font-size:.85rem;border-radius:20px;">
+                  <%= s %>
+                  <button type="button" onclick="removeTag(this)" class="btn-close btn-close-sm ms-1" style="font-size:.55rem;"></button>
+                </span>
+              <% end %>
+            </div>
+
+            <div class="input-group input-group-sm" style="max-width:440px;">
+              <input type="text" id="spec-input" class="form-control"
+                     placeholder="e.g. Online store, Mobile app..." maxlength="60">
+              <button type="button" class="btn btn-outline-primary" onclick="addTag()">
+                <i class="bi bi-plus-lg"></i> Add
+              </button>
+            </div>
+
+            <%= f.hidden_field :specialties, id: "spec-hidden",
+                  value: @user.specialties.to_s %>
+          </div>
         </div>
       </div>
+
+      <script>
+        const specInput  = document.getElementById('spec-input');
+        const specHidden = document.getElementById('spec-hidden');
+        const specTags   = document.getElementById('spec-tags');
+
+        specInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } });
+
+        function addTag() {
+          const val = specInput.value.trim();
+          if (!val) return;
+          const span = document.createElement('span');
+          span.className = 'spec-tag badge d-inline-flex align-items-center gap-1 px-3 py-2';
+          span.style.cssText = 'background:#e8f5ee;color:#2d6044;border:1px solid #b2d8c0;font-size:.85rem;border-radius:20px;';
+          span.innerHTML = `${val} <button type="button" onclick="removeTag(this)" class="btn-close btn-close-sm ms-1" style="font-size:.55rem;"></button>`;
+          specTags.appendChild(span);
+          specInput.value = '';
+          syncHidden();
+        }
+
+        function removeTag(btn) {
+          btn.closest('.spec-tag').remove();
+          syncHidden();
+        }
+
+        function syncHidden() {
+          const tags = [...specTags.querySelectorAll('.spec-tag')].map(el =>
+            el.childNodes[0].textContent.trim()
+          );
+          specHidden.value = tags.join('\n');
+        }
+      </script>
 
       <div class="card p-4 mb-4">
         <h6 class="fw-semibold mb-3"><i class="bi bi-chat-dots me-2"></i>Contact details</h6>

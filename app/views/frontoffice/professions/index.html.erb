@@ -1,0 +1,56 @@
+<!-- Hero -->
+<section class="hero text-white" style="padding: 60px 0 48px;">
+  <div class="container text-center">
+    <p class="text-uppercase fw-semibold mb-2" style="color:rgba(255,255,255,.5);letter-spacing:.12em;font-size:.8rem;">Hire the right person</p>
+    <h1 class="fw-bold mb-3" style="font-family:'Lora',serif;font-size:2.4rem;">Who do you need?</h1>
+    <p class="mx-auto" style="color:rgba(255,255,255,.65);font-size:1.05rem;max-width:560px;line-height:1.7;">
+      Not sure what kind of professional you're looking for? Here's a plain-language guide to the most common roles — and what each one can actually do for you.
+    </p>
+    <%= link_to "Browse all nomads", frontoffice_profiles_path,
+          class: "btn btn-outline-light btn-sm mt-1" %>
+  </div>
+</section>
+
+<!-- Professions grid -->
+<div class="container py-5">
+  <div class="row g-4">
+    <% @professions.each do |p| %>
+      <div class="col-md-6 col-lg-4" id="<%= p[:slug] %>">
+        <div class="card h-100 p-4" style="border-top: 4px solid <%= p[:color] %>;">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:48px;height:48px;background:<%= p[:color] %>18;">
+              <i class="bi <%= p[:icon] %> fs-4" style="color:<%= p[:color] %>;"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0" style="font-family:'Lora',serif;color:#1a2e20;font-size:1.05rem;"><%= p[:name] %></h5>
+              <p class="text-muted mb-0" style="font-size:.82rem;"><%= p[:tagline] %></p>
+            </div>
+          </div>
+
+          <p class="text-secondary mb-3" style="font-size:.92rem;line-height:1.65;"><%= p[:description] %></p>
+
+          <div class="mt-auto">
+            <p class="fw-semibold mb-2" style="font-size:.82rem;color:#2a3a2e;text-transform:uppercase;letter-spacing:.05em;">They can deliver:</p>
+            <ul class="list-unstyled mb-0" style="font-size:.88rem;">
+              <% p[:services].each do |svc| %>
+                <li class="d-flex align-items-start gap-2 mb-1">
+                  <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color:<%= p[:color] %>;font-size:.75rem;"></i>
+                  <span class="text-secondary"><%= svc %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="mt-4">
+            <%= link_to frontoffice_profiles_path(q: p[:name].split.first),
+                  class: "btn btn-sm w-100 fw-semibold",
+                  style: "background:#{p[:color]}18;color:#{p[:color]};border:1px solid #{p[:color]}44;" do %>
+              Find a <%= p[:name] %> <i class="bi bi-arrow-right ms-1"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
