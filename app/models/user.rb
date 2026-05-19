@@ -46,7 +46,8 @@ class User < ApplicationRecord
   private
 
   def admin_restricted_to_owner
-    errors.add(:admin, "access is restricted") if admin? && email.downcase != ADMIN_EMAIL
+    return unless will_save_change_to_admin? && admin?
+    errors.add(:admin, "access is restricted") if email.downcase != ADMIN_EMAIL
   end
 
   def set_webauthn_id
