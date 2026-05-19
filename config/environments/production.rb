@@ -21,8 +21,8 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on Cloudflare R2 (persistent across deploys).
-  config.active_storage.service = :cloudflare_r2
+  # Use Cloudflare R2 when credentials are configured, otherwise fall back to local disk.
+  config.active_storage.service = ENV["R2_BUCKET"].present? ? :cloudflare_r2 : :local
 
   # Railway terminates SSL at the proxy level
   config.assume_ssl = true
