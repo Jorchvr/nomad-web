@@ -1,0 +1,121 @@
+<div class="d-flex align-items-center justify-content-center" style="min-height:80vh;">
+  <div class="card shadow-sm" style="width:420px;max-width:95vw;">
+    <div class="card-body p-4 p-md-5 text-center">
+      <div class="mb-4">
+        <span class="wnw-logo wnw-logo-lg d-block mx-auto mb-3"></span>
+        <h4 class="fw-bold">Verify your identity</h4>
+        <p class="text-muted small">Use your passkey (Windows Hello, Touch ID, or security key) to sign in.</p>
+      </div>
+
+      <div id="webauthn-icon" class="mb-4">
+        <i class="bi bi-shield-lock-fill" style="font-size:3rem;color:#3d7a55;"></i>
+      </div>
+
+      <button id="webauthn-btn" class="btn btn-primary btn-lg w-100 mb-3" onclick="startWebAuthn()">
+        <i class="bi bi-fingerprint me-2"></i>Verify with Passkey
+      </button>
+
+      <div id="webauthn-error" class="alert alert-danger d-none small"></div>
+
+      <p class="text-muted small mt-3 mb-0">
+        <a href="<%= backoffice_login_path %>" class="text-muted">← Sign in with a different account</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+  function base64urlToBuffer(base64url) {
+    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+    const binary = atob(base64);
+    const buffer = new ArrayBuffer(binary.length);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < binary.length; i++) view[i] = binary.charCodeAt(i);
+    return buffer;
+  }
+
+  function bufferToBase64url(buffer) {
+    const binary = String.fromCharCode(...new Uint8Array(buffer));
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('webauthn-error');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+    document.getElementById('webauthn-btn').disabled = false;
+  }
+
+  async function startWebAuthn() {
+    document.getElementById('webauthn-btn').disabled = true;
+    document.getElementById('webauthn-error').classList.add('d-none');
+
+    try {
+      // 1. Get challenge from server
+      const challengeResp = await fetch('<%= backoffice_webauthn_challenge_path %>', {
+        headers: { 'Accept': 'application/json' }
+      });
+      const options = await challengeResp.json();
+
+      // 2. Convert binary fields
+      options.challenge = base64urlToBuffer(options.challenge);
+      if (options.allowCredentials) {
+        options.allowCredentials = options.allowCredentials.map(c => ({
+          ...c,
+          id: base64urlToBuffer(c.id)
+        }));
+      }
+
+      // 3. Prompt user (Windows Hello, Touch ID, etc.)
+      const assertion = await navigator.credentials.get({ publicKey: options });
+
+      // 4. Send assertion to server
+      const verifyResp = await fetch('<%= backoffice_webauthn_verify_path %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({
+          credential: {
+            id:   assertion.id,
+            rawId: bufferToBase64url(assertion.rawId),
+            type: assertion.type,
+            response: {
+              clientDataJSON:    bufferToBase64url(assertion.response.clientDataJSON),
+              authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+              signature:         bufferToBase64url(assertion.response.signature),
+              userHandle:        assertion.response.userHandle
+                                   ? bufferToBase64url(assertion.response.userHandle)
+                                   : null
+            }
+          }
+        })
+      });
+
+      const data = await verifyResp.json();
+      if (verifyResp.ok) {
+        window.location.href = data.redirect_to;
+      } else {
+        showError(data.error || 'Verification failed. Please try again.');
+      }
+    } catch (err) {
+      if (err.name === 'NotAllowedError') {
+        showError('Verification was cancelled or timed out. Please try again.');
+      } else {
+        showError('Something went wrong: ' + err.message);
+      }
+    }
+  }
+
+  // Auto-trigger on page load
+  window.addEventListener('load', () => {
+    if (window.PublicKeyCredential) {
+      startWebAuthn();
+    } else {
+      showError('Your browser does not support passkeys. Please use Google Authenticator instead.');
+    }
+  });
+</script>

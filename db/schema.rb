@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_18_230002) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -120,13 +120,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_220000) do
     t.string "otp_secret"
     t.string "password_digest", null: false
     t.string "profession"
+    t.string "provider"
     t.boolean "published", default: false, null: false
     t.string "role", default: "nomad", null: false
+    t.string "uid"
     t.datetime "updated_at", null: false
     t.boolean "verified", default: false, null: false
+    t.string "webauthn_id", null: false
     t.string "whatsapp"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
+    t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
+  end
+
+  create_table "webauthn_credentials", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "external_id", null: false
+    t.string "nickname", default: "Passkey", null: false
+    t.string "public_key", null: false
+    t.integer "sign_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["external_id"], name: "index_webauthn_credentials_on_external_id", unique: true
+    t.index ["user_id"], name: "index_webauthn_credentials_on_user_id"
   end
 
   create_table "work_photos", force: :cascade do |t|
@@ -146,5 +163,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_220000) do
   add_foreign_key "friendships", "users", column: "sender_id"
   add_foreign_key "profile_links", "users"
   add_foreign_key "travel_stories", "users"
+  add_foreign_key "webauthn_credentials", "users"
   add_foreign_key "work_photos", "users"
 end

@@ -49,6 +49,10 @@ module Backoffice
 
     # Disable 2FA
     def disable
+      if current_user.admin?
+        redirect_to edit_backoffice_profile_path, alert: "Admin accounts cannot disable two-factor authentication."
+        return
+      end
       current_user.update!(otp_enabled: false, otp_secret: nil)
       redirect_to edit_backoffice_profile_path, notice: "Two-factor authentication disabled."
     end

@@ -74,14 +74,16 @@
                 class: "form-control #{@user.errors[:email].any? ? 'is-invalid' : ''}",
                 placeholder: "you@email.com" %>
         </div>
-        <div class="col-md-6">
-          <%= f.label :password, "Password", class: "form-label fw-semibold" %>
-          <%= f.password_field :password, class: "form-control", placeholder: "At least 6 characters" %>
-        </div>
-        <div class="col-md-6">
-          <%= f.label :password_confirmation, "Confirm", class: "form-label fw-semibold" %>
-          <%= f.password_field :password_confirmation, class: "form-control", placeholder: "Repeat password" %>
-        </div>
+        <% unless @oauth_data %>
+          <div class="col-md-6">
+            <%= f.label :password, "Password", class: "form-label fw-semibold" %>
+            <%= f.password_field :password, class: "form-control", placeholder: "At least 6 characters" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :password_confirmation, "Confirm", class: "form-label fw-semibold" %>
+            <%= f.password_field :password_confirmation, class: "form-control", placeholder: "Repeat password" %>
+          </div>
+        <% end %>
       </div>
 
       <div class="mt-4">

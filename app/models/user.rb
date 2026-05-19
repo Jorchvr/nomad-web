@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
+  has_many :webauthn_credentials, dependent: :destroy
   has_many :sent_friendships,     class_name: "Friendship", foreign_key: :sender_id,   dependent: :destroy
   has_many :received_friendships, class_name: "Friendship", foreign_key: :receiver_id, dependent: :destroy
   has_many :forums,       dependent: :destroy
@@ -33,17 +34,33 @@ class User < ApplicationRecord
     received_friendships.pending.includes(:sender)
   end
 
+  ADMIN_EMAIL = "ramoosvr3@icloud.com"
+
   validates :role, inclusion: { in: %w[nomad client] }
   validates :email, presence: true, uniqueness: { case_sensitive: false },
                     format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true
   validates :country, :profession, presence: true, if: :nomad?
+  validate :admin_restricted_to_owner
+
+  private
+
+  def admin_restricted_to_owner
+    errors.add(:admin, "access is restricted") if admin? && email.downcase != ADMIN_EMAIL
+  end
+
+  def set_webauthn_id
+    self.webauthn_id ||= SecureRandom.urlsafe_base64(32)
+  end
+
+  public
 
   def nomad?  = role == "nomad"
   def client? = role == "client"
   def admin?  = admin == true
 
-  before_save { self.email = email.downcase }
+  before_save   { self.email = email.downcase }
+  before_create :set_webauthn_id
 
   def generate_otp_secret!
     update_column(:otp_secret, ROTP::Base32.random)

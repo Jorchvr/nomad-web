@@ -10,6 +10,11 @@ Rails.application.routes.draw do
     resources :travel_stories, only: [:index, :show]
   end
 
+  # OmniAuth callbacks (must be outside namespace — OAuth providers redirect here)
+  get  "/auth/:provider/callback", to: "backoffice/omniauth_callbacks#github",        constraints: { provider: "github" }
+  get  "/auth/:provider/callback", to: "backoffice/omniauth_callbacks#google_oauth2", constraints: { provider: "google_oauth2" }
+  get  "/auth/failure",            to: "backoffice/omniauth_callbacks#failure"
+
   # Backoffice — área de miembros
   namespace :backoffice do
     root "dashboard#index"
@@ -21,6 +26,14 @@ Rails.application.routes.draw do
     get  "two-factor/setup",   to: "two_factor#setup",   as: :two_factor_setup
     post "two-factor/enable",  to: "two_factor#enable",  as: :two_factor_enable
     delete "two-factor/disable", to: "two_factor#disable", as: :two_factor_disable
+
+    # WebAuthn / Passkeys
+    get  "passkeys/verify",     to: "webauthn_sessions#show",      as: :webauthn_verify
+    get  "passkeys/challenge",  to: "webauthn_sessions#challenge", as: :webauthn_challenge
+    post "passkeys/verify",     to: "webauthn_sessions#create"
+    get  "passkeys/register",   to: "webauthn_credentials#challenge", as: :webauthn_registration_challenge
+    post "passkeys",            to: "webauthn_credentials#create",    as: :webauthn_credentials
+    delete "passkeys/:id",      to: "webauthn_credentials#destroy",   as: :webauthn_credential
     get  "login",    to: "sessions#new",           as: :login
     post "login",    to: "sessions#create"
     delete "logout", to: "sessions#destroy",        as: :logout
