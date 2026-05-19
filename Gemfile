@@ -25,7 +25,7 @@ gem "bcrypt", "~> 3.1.7"
 
 # Two-factor authentication (TOTP / Google Authenticator)
 gem "rotp",    "~> 6.3"
-gem "rqrcode", "~> 2.2"
+gem "rqrcode", "~> 3.2"
 
 # WebAuthn / Passkeys (hardware-bound second factor)
 gem "webauthn", "~> 3.0"
