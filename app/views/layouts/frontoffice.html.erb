@@ -170,6 +170,30 @@
       </div>
     </footer>
 
+    <!-- Spinning globe -->
+    <div id="spinning-globe" title="World Nomad Web">🌍</div>
+    <style>
+      @keyframes spin-globe {
+        from { transform: rotateY(0deg); }
+        to   { transform: rotateY(360deg); }
+      }
+      #spinning-globe {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        font-size: 2.4rem;
+        line-height: 1;
+        animation: spin-globe 4s linear infinite;
+        cursor: default;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,.25));
+        z-index: 1000;
+        user-select: none;
+      }
+      #spinning-globe:hover {
+        animation-duration: 1s;
+      }
+    </style>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       function applyThemeIcon(t) {
