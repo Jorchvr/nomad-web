@@ -23,38 +23,40 @@
         <% end %>
       <% end %>
 
-      <% if friendship.nil? %>
-        <%= button_to backoffice_friendships_path(receiver_id: @member.id), method: :post,
-              class: "btn btn-primary w-100 mb-2" do %>
-          <i class="bi bi-person-plus me-1"></i>Send friend request
-        <% end %>
-      <% elsif friendship.pending? && friendship.sender == current_user %>
-        <button class="btn btn-secondary w-100 mb-2" disabled>
-          <i class="bi bi-hourglass-split me-1"></i>Request pending
-        </button>
-        <%= button_to backoffice_friendship_path(friendship), method: :delete,
-              class: "btn btn-outline-secondary btn-sm w-100" do %>
-          Cancel request
-        <% end %>
-      <% elsif friendship.pending? && friendship.receiver == current_user %>
-        <div class="d-flex gap-2 mb-2">
-          <%= button_to backoffice_friendship_path(friendship), method: :patch,
-                class: "btn btn-success flex-grow-1" do %>
-            <i class="bi bi-check-lg"></i> Accept
+      <% if @member.nomad? %>
+        <% if friendship.nil? %>
+          <%= button_to backoffice_friendships_path(receiver_id: @member.id), method: :post,
+                class: "btn btn-primary w-100 mb-2" do %>
+            <i class="bi bi-person-plus me-1"></i>Send friend request
           <% end %>
+        <% elsif friendship.pending? && friendship.sender == current_user %>
+          <button class="btn btn-secondary w-100 mb-2" disabled>
+            <i class="bi bi-hourglass-split me-1"></i>Request pending
+          </button>
           <%= button_to backoffice_friendship_path(friendship), method: :delete,
-                class: "btn btn-outline-danger" do %>
-            <i class="bi bi-x-lg"></i>
+                class: "btn btn-outline-secondary btn-sm w-100" do %>
+            Cancel request
           <% end %>
-        </div>
-      <% elsif friendship.accepted? %>
-        <div class="alert alert-success py-2 mb-2">
-          <i class="bi bi-check-circle me-1"></i>You are friends
-        </div>
-        <%= button_to backoffice_friendship_path(friendship), method: :delete,
-              class: "btn btn-outline-danger btn-sm w-100",
-              data: { turbo_confirm: "Remove #{@member.name} from your friends?" } do %>
-          <i class="bi bi-person-dash me-1"></i>Remove friend
+        <% elsif friendship.pending? && friendship.receiver == current_user %>
+          <div class="d-flex gap-2 mb-2">
+            <%= button_to backoffice_friendship_path(friendship), method: :patch,
+                  class: "btn btn-success flex-grow-1" do %>
+              <i class="bi bi-check-lg"></i> Accept
+            <% end %>
+            <%= button_to backoffice_friendship_path(friendship), method: :delete,
+                  class: "btn btn-outline-danger" do %>
+              <i class="bi bi-x-lg"></i>
+            <% end %>
+          </div>
+        <% elsif friendship.accepted? %>
+          <div class="alert alert-success py-2 mb-2">
+            <i class="bi bi-check-circle me-1"></i>You are friends
+          </div>
+          <%= button_to backoffice_friendship_path(friendship), method: :delete,
+                class: "btn btn-outline-danger btn-sm w-100",
+                data: { turbo_confirm: "Remove #{@member.name} from your friends?" } do %>
+            <i class="bi bi-person-dash me-1"></i>Remove friend
+          <% end %>
         <% end %>
       <% end %>
 
