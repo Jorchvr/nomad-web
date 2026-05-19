@@ -213,6 +213,9 @@
             <%= link_to root_path do %>
               <i class="bi bi-grid"></i> View Directory
             <% end %>
+            <%= link_to backoffice_security_path, class: "#{controller_name == 'security' ? 'active' : ''}" do %>
+              <i class="bi bi-shield-lock-fill"></i> Security
+            <% end %>
             <%= link_to backoffice_tutorial_path, class: "#{controller_name == 'dashboard' && action_name == 'tutorial' ? 'active' : ''}" do %>
               <i class="bi bi-question-circle"></i> How to use
             <% end %>
@@ -223,6 +226,9 @@
               <% if unread > 0 %>
                 <span class="badge ms-auto" style="background:#3d7a55;"><%= unread %></span>
               <% end %>
+            <% end %>
+            <%= link_to backoffice_security_path, class: "#{controller_name == 'security' ? 'active' : ''}" do %>
+              <i class="bi bi-shield-lock-fill"></i> Security
             <% end %>
             <div class="sidebar-nav-divider" style="border-top:1px solid rgba(255,255,255,.05);margin:6px 0;"></div>
             <%= link_to root_path do %>

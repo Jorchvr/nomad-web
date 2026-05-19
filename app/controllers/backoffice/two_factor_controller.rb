@@ -37,7 +37,7 @@ module Backoffice
     def enable
       if current_user.verify_otp(params[:otp_code])
         current_user.update!(otp_enabled: true)
-        redirect_to edit_backoffice_profile_path, notice: "Two-factor authentication enabled."
+        redirect_to backoffice_security_path, notice: "Two-factor authentication enabled."
       else
         flash.now[:alert] = "Invalid code. Scan the QR again and try."
         current_user.generate_otp_secret!
@@ -50,11 +50,11 @@ module Backoffice
     # Disable 2FA
     def disable
       if current_user.admin?
-        redirect_to edit_backoffice_profile_path, alert: "Admin accounts cannot disable two-factor authentication."
+        redirect_to backoffice_security_path, alert: "Admin accounts cannot disable two-factor authentication."
         return
       end
       current_user.update!(otp_enabled: false, otp_secret: nil)
-      redirect_to edit_backoffice_profile_path, notice: "Two-factor authentication disabled."
+      redirect_to backoffice_security_path, notice: "Two-factor authentication disabled."
     end
 
     private

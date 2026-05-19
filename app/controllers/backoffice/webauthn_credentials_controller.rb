@@ -34,6 +34,6 @@ class Backoffice::WebauthnCredentialsController < Backoffice::BaseController
   def destroy
     credential = current_user.webauthn_credentials.find(params[:id])
     credential.destroy
-    redirect_to edit_backoffice_profile_path, notice: "Passkey removed."
+    redirect_to backoffice_security_path, notice: "Passkey removed."
   end
 end

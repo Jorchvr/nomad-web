@@ -1,0 +1,161 @@
+<% content_for :page_title, "Security" %>
+
+<h4 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill me-2 text-primary"></i>Security</h4>
+<p class="text-muted mb-4">Manage your account's login security — passkeys and two-factor authentication.</p>
+
+<%# ── Passkeys ── %>
+<div class="card p-4 mb-4" style="border-color:<%= current_user.webauthn_credentials.any? ? '#b2d8c0' : 'var(--wnw-border)' %> !important;">
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-3">
+    <div>
+      <h6 class="fw-semibold mb-1">
+        <i class="bi bi-fingerprint me-2" style="color:<%= current_user.webauthn_credentials.any? ? '#3d7a55' : '#8b9a8e' %>;"></i>
+        Passkeys
+        <% if current_user.webauthn_credentials.any? %>
+          <span class="badge bg-success ms-1" style="font-size:.7rem;">Active</span>
+        <% end %>
+      </h6>
+      <p class="text-muted small mb-0">
+        Use Windows Hello, Touch ID or a security key to log in — no password or code needed.
+        More secure than Google Authenticator.
+      </p>
+    </div>
+  </div>
+
+  <% if current_user.webauthn_credentials.any? %>
+    <ul class="list-group list-group-flush mb-3">
+      <% current_user.webauthn_credentials.order(:created_at).each do |cred| %>
+        <li class="list-group-item d-flex align-items-center justify-content-between px-0">
+          <span>
+            <i class="bi bi-shield-check me-2 text-success"></i>
+            <strong><%= cred.nickname %></strong>
+            <span class="text-muted small ms-2">Added <%= cred.created_at.strftime("%b %d, %Y") %></span>
+          </span>
+          <%= button_to backoffice_webauthn_credential_path(cred), method: :delete,
+                class: "btn btn-outline-danger btn-sm",
+                data: { turbo_confirm: "Remove passkey \"#{cred.nickname}\"?" } do %>
+            <i class="bi bi-trash"></i>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <button id="add-passkey-btn" class="btn btn-outline-success btn-sm" onclick="registerPasskey(event)">
+    <i class="bi bi-plus-circle me-1"></i>Add a passkey
+  </button>
+  <div id="passkey-error"   class="alert alert-danger  mt-2 d-none small"></div>
+  <div id="passkey-success" class="alert alert-success mt-2 d-none small"></div>
+</div>
+
+<%# ── Two-Factor Authentication ── %>
+<div class="card p-4" style="border-color:<%= current_user.otp_enabled? ? '#b2d8c0' : 'var(--wnw-border)' %> !important;">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+      <h6 class="fw-semibold mb-1">
+        <i class="bi bi-shield-lock-fill me-2" style="color:<%= current_user.otp_enabled? ? '#3d7a55' : '#8b9a8e' %>;"></i>
+        Two-Factor Authentication (2FA)
+        <% if current_user.otp_enabled? %>
+          <span class="badge bg-success ms-1" style="font-size:.7rem;">Active</span>
+        <% end %>
+      </h6>
+      <% if current_user.otp_enabled? %>
+        <p class="text-success small mb-0">
+          <i class="bi bi-check-circle-fill me-1"></i>Active — your account is protected with Google Authenticator.
+        </p>
+      <% else %>
+        <p class="text-muted small mb-0">
+          Add an extra layer of security. You'll need a 6-digit code from Google Authenticator each time you log in.
+        </p>
+      <% end %>
+    </div>
+    <% if current_user.otp_enabled? %>
+      <% unless current_user.admin? %>
+        <%= button_to backoffice_two_factor_disable_path, method: :delete,
+              class: "btn btn-outline-danger btn-sm",
+              data: { turbo_confirm: "Disable two-factor authentication? Your account will be less secure." } do %>
+          <i class="bi bi-shield-x me-1"></i>Disable 2FA
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= link_to backoffice_two_factor_setup_path, class: "btn btn-outline-success btn-sm" do %>
+        <i class="bi bi-shield-check me-1"></i>Enable 2FA
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  const passkeyCSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+  function base64urlToBuffer(b) {
+    const s = b.replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;
+  }
+
+  function bufferToBase64url(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+
+  async function registerPasskey(e) {
+    e.preventDefault();
+    const btn  = document.getElementById('add-passkey-btn');
+    const errEl = document.getElementById('passkey-error');
+    const okEl  = document.getElementById('passkey-success');
+    btn.disabled = true;
+    errEl.classList.add('d-none');
+    okEl.classList.add('d-none');
+
+    try {
+      const challengeResp = await fetch('<%= backoffice_webauthn_registration_challenge_path %>', {
+        headers: { 'Accept': 'application/json' }
+      });
+      const options = await challengeResp.json();
+
+      options.challenge = base64urlToBuffer(options.challenge);
+      options.user.id   = base64urlToBuffer(options.user.id);
+      if (options.excludeCredentials) {
+        options.excludeCredentials = options.excludeCredentials.map(c => ({
+          ...c, id: base64urlToBuffer(c.id)
+        }));
+      }
+
+      const credential = await navigator.credentials.create({ publicKey: options });
+      const nickname = prompt('Name this passkey (e.g. "My Phone", "MacBook"):') || 'Passkey';
+
+      const resp = await fetch('<%= backoffice_webauthn_credentials_path %>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': passkeyCSRF },
+        body: JSON.stringify({
+          nickname,
+          credential: {
+            id:    credential.id,
+            rawId: bufferToBase64url(credential.rawId),
+            type:  credential.type,
+            response: {
+              clientDataJSON:    bufferToBase64url(credential.response.clientDataJSON),
+              attestationObject: bufferToBase64url(credential.response.attestationObject)
+            }
+          }
+        })
+      });
+
+      if (resp.ok) {
+        okEl.textContent = 'Passkey added! Reloading...';
+        okEl.classList.remove('d-none');
+        setTimeout(() => window.location.reload(), 1200);
+      } else {
+        const data = await resp.json();
+        errEl.textContent = data.error || 'Failed to register passkey.';
+        errEl.classList.remove('d-none');
+        btn.disabled = false;
+      }
+    } catch (err) {
+      errEl.textContent = err.name === 'NotAllowedError'
+        ? 'Registration cancelled. Please try again.'
+        : 'Error: ' + err.message;
+      errEl.classList.remove('d-none');
+      btn.disabled = false;
+    }
+  }
+</script>
