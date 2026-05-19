@@ -170,29 +170,116 @@
       </div>
     </footer>
 
-    <!-- Spinning globe -->
-    <div id="spinning-globe" title="World Nomad Web">🌍</div>
+    <!-- 3D Globe -->
+    <canvas id="globe-3d" title="World Nomad Web"></canvas>
     <style>
-      @keyframes spin-globe {
-        from { transform: rotateY(0deg); }
-        to   { transform: rotateY(360deg); }
-      }
-      #spinning-globe {
+      #globe-3d {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        font-size: 2.4rem;
-        line-height: 1;
-        animation: spin-globe 4s linear infinite;
-        cursor: default;
-        filter: drop-shadow(0 2px 8px rgba(0,0,0,.25));
+        width: 60px;
+        height: 60px;
         z-index: 1000;
+        cursor: default;
+        border-radius: 50%;
+        box-shadow: 0 6px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(100,180,255,.15);
         user-select: none;
       }
-      #spinning-globe:hover {
-        animation-duration: 1s;
-      }
     </style>
+    <script>
+    (function(){
+      const c = document.getElementById('globe-3d');
+      const x = c.getContext('2d');
+      const S = 120; c.width = c.height = S;
+      const h = S/2, R = h - 2;
+      let rot = 0, speed = 0.18;
+      c.addEventListener('mouseenter', () => speed = 0.9);
+      c.addEventListener('mouseleave', () => speed = 0.18);
+
+      // Continent polygons [lat, lon] — simplified
+      const land = [
+        // North America
+        [[72,-80],[62,-140],[48,-125],[30,-117],[22,-105],[15,-90],[8,-77],[12,-72],[20,-66],[28,-77],[35,-76],[40,-74],[47,-53],[58,-65]],
+        // Greenland
+        [[83,-25],[83,-65],[72,-55],[62,-64],[65,-68]],
+        // South America
+        [[12,-72],[8,-78],[-5,-81],[-15,-75],[-22,-70],[- 35,-57],[-55,-68],[-42,-64],[-22,-43],[-5,-35],[5,-52]],
+        // Europe
+        [[70,28],[55,28],[58,5],[52,2],[43,-8],[37,-8],[37,10],[45,30],[47,40],[55,30]],
+        // Africa
+        [[37,10],[37,37],[12,44],[0,42],[-10,40],[-35,26],[-35,18],[0,9],[5,-5],[15,-17],[20,-17]],
+        // Asia
+        [[70,28],[72,80],[72,140],[55,142],[35,137],[25,122],[10,105],[0,104],[10,100],[22,90],[28,97],[35,77],[40,62],[35,37],[30,35]],
+        // Australia
+        [[-15,130],[-18,147],[-28,153],[-38,146],[-38,140],[-22,113]],
+        // Japan
+        [[45,142],[38,141],[34,131],[31,131],[35,136],[38,141]],
+      ];
+
+      function proj(la, lo) {
+        const φ = la * Math.PI/180, λ = (lo - rot) * Math.PI/180;
+        const cφ = Math.cos(φ);
+        return { x: h + R*cφ*Math.sin(λ), y: h - R*Math.sin(φ), z: cφ*Math.cos(λ) };
+      }
+
+      function clip(pts) {
+        const o = [];
+        for (let i = 0; i < pts.length; i++) {
+          const a = pts[i], b = pts[(i+1)%pts.length];
+          if (a.z > 0) {
+            o.push(a);
+            if (b.z <= 0) { const t = a.z/(a.z-b.z); o.push({x:a.x+t*(b.x-a.x), y:a.y+t*(b.y-a.y), z:0}); }
+          } else if (b.z > 0) {
+            const t = a.z/(a.z-b.z); o.push({x:a.x+t*(b.x-a.x), y:a.y+t*(b.y-a.y), z:0});
+          }
+        }
+        return o;
+      }
+
+      function draw() {
+        x.clearRect(0, 0, S, S);
+        x.save();
+        x.beginPath(); x.arc(h, h, R, 0, Math.PI*2); x.clip();
+
+        // Ocean
+        const og = x.createRadialGradient(h-R*.3, h-R*.3, R*.05, h, h, R);
+        og.addColorStop(0, '#62b9f0'); og.addColorStop(.5, '#1e72c8'); og.addColorStop(1, '#081e5a');
+        x.fillStyle = og; x.fillRect(0, 0, S, S);
+
+        // Land
+        x.fillStyle = '#2e9648';
+        land.forEach(poly => {
+          const ps = poly.map(([la, lo]) => proj(la, lo));
+          if (ps.every(p => p.z <= 0)) return;
+          const cs = ps.some(p => p.z <= 0) ? clip(ps) : ps;
+          if (cs.length < 3) return;
+          x.beginPath();
+          cs.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y));
+          x.closePath(); x.fill();
+        });
+
+        // Dark atmosphere at edges
+        const ag = x.createRadialGradient(h, h, R*.62, h, h, R);
+        ag.addColorStop(0, 'rgba(0,0,0,0)'); ag.addColorStop(1, 'rgba(0,5,40,.62)');
+        x.fillStyle = ag; x.fillRect(0, 0, S, S);
+
+        // Specular highlight (top-left)
+        const sg = x.createRadialGradient(h-R*.38, h-R*.43, 0, h-R*.1, h-R*.1, R*.9);
+        sg.addColorStop(0, 'rgba(255,255,255,.42)');
+        sg.addColorStop(.28, 'rgba(255,255,255,.07)');
+        sg.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = sg; x.fillRect(0, 0, S, S);
+
+        x.restore();
+
+        // Outer glow ring
+        x.beginPath(); x.arc(h, h, R, 0, Math.PI*2);
+        x.strokeStyle = 'rgba(120,190,255,.28)'; x.lineWidth = 2; x.stroke();
+      }
+
+      (function loop(){ rot = (rot + speed) % 360; draw(); requestAnimationFrame(loop); })();
+    })();
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
