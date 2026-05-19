@@ -3,13 +3,15 @@ class Backoffice::MembersController < Backoffice::BaseController
   before_action :set_member, only: [:show, :verify]
 
   def index
-    @members = if current_user.admin?
-                 User.where.not(id: current_user.id)
-               else
-                 User.where(role: "nomad").where.not(id: current_user.id)
-               end
-    @members = @members.order(:name)
-    @members = @members.search(params[:q]) if params[:q].present?
+    if current_user.admin?
+      base = User.where.not(id: current_user.id).order(:name)
+      base = base.search(params[:q]) if params[:q].present?
+      @nomads  = base.where(role: "nomad")
+      @clients = base.where(role: "client")
+    else
+      @members = User.where(role: "nomad").where.not(id: current_user.id).order(:name)
+      @members = @members.search(params[:q]) if params[:q].present?
+    end
   end
 
   def show

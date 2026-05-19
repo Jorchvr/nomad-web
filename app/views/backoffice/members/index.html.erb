@@ -1,8 +1,12 @@
-<% content_for :page_title, "Nomads" %>
+<% content_for :page_title, "Members" %>
 
 <div class="d-flex align-items-center justify-content-between mb-4">
-  <h4 class="fw-bold mb-0"><i class="bi bi-globe2 me-2 text-primary"></i>Nomads</h4>
-  <span class="text-muted small"><%= @members.count %> members</span>
+  <h4 class="fw-bold mb-0"><i class="bi bi-people-fill me-2 text-primary"></i>Members</h4>
+  <% if current_user.admin? %>
+    <span class="text-muted small"><%= @nomads.count + @clients.count %> total</span>
+  <% else %>
+    <span class="text-muted small"><%= @members.count %> members</span>
+  <% end %>
 </div>
 
 <%= form_with url: backoffice_members_path, method: :get, local: true, class: "mb-4" do |f| %>
@@ -20,54 +24,184 @@
   </div>
 <% end %>
 
-<div class="row g-3">
-  <% @members.each do |member| %>
-    <% friendship = current_user.friendship_with(member) %>
-    <div class="col-md-4 col-lg-3">
-      <div class="card h-100 p-3 text-center">
-        <img src="<%= user_avatar_url(member, 80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80">
-        <div class="fw-semibold"><%= member.name %></div>
-        <div class="text-muted small mb-1"><%= member.profession %></div>
-        <div class="text-muted small mb-3">
-          <i class="bi bi-geo-alt me-1"></i><%= member.country %>
-        </div>
+<% if current_user.admin? %>
 
-        <% if friendship.nil? %>
-          <%= button_to backoffice_friendships_path(receiver_id: member.id), method: :post,
-                class: "btn btn-primary btn-sm w-100" do %>
-            <i class="bi bi-person-plus me-1"></i>Add friend
-          <% end %>
-        <% elsif friendship.pending? && friendship.sender == current_user %>
-          <button class="btn btn-secondary btn-sm w-100" disabled>
-            <i class="bi bi-hourglass-split me-1"></i>Request sent
-          </button>
-        <% elsif friendship.pending? && friendship.receiver == current_user %>
-          <div class="d-flex gap-1">
-            <%= button_to backoffice_friendship_path(friendship), method: :patch,
-                  class: "btn btn-success btn-sm flex-grow-1" do %>
-              <i class="bi bi-check-lg"></i> Accept
-            <% end %>
-            <%= button_to backoffice_friendship_path(friendship), method: :delete,
-                  class: "btn btn-outline-danger btn-sm" do %>
-              <i class="bi bi-x-lg"></i>
+  <%# ── Nomad members ── %>
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span class="fw-semibold" style="color:#2a3a2e;"><i class="bi bi-globe2 me-1 text-primary"></i>Nomad members</span>
+    <span class="badge rounded-pill" style="background:#e8f5ee;color:#2d6044;border:1px solid #b2d8c0;"><%= @nomads.count %></span>
+  </div>
+
+  <div class="row g-3 mb-5">
+    <% @nomads.each do |member| %>
+      <% friendship = current_user.friendship_with(member) %>
+      <div class="col-md-4 col-lg-3">
+        <div class="card h-100 p-3 text-center">
+          <img src="<%= user_avatar_url(member, 80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80">
+          <div class="fw-semibold">
+            <%= member.name %>
+            <% if member.verified? %>
+              <i class="bi bi-patch-check-fill text-primary" style="font-size:.85rem;" title="Verified"></i>
             <% end %>
           </div>
-        <% elsif friendship.accepted? %>
-          <span class="badge bg-success w-100 py-2">
-            <i class="bi bi-check-circle me-1"></i>Friends
-          </span>
-        <% end %>
+          <div class="text-muted small mb-1"><%= member.profession %></div>
+          <div class="text-muted small mb-3">
+            <i class="bi bi-geo-alt me-1"></i><%= member.country %>
+          </div>
 
-        <%= link_to "View profile", backoffice_member_path(member),
-              class: "btn btn-outline-secondary btn-sm w-100 mt-2" %>
+          <% if friendship.nil? %>
+            <%= button_to backoffice_friendships_path(receiver_id: member.id), method: :post,
+                  class: "btn btn-primary btn-sm w-100" do %>
+              <i class="bi bi-person-plus me-1"></i>Add friend
+            <% end %>
+          <% elsif friendship.pending? && friendship.sender == current_user %>
+            <button class="btn btn-secondary btn-sm w-100" disabled>
+              <i class="bi bi-hourglass-split me-1"></i>Request sent
+            </button>
+          <% elsif friendship.pending? && friendship.receiver == current_user %>
+            <div class="d-flex gap-1">
+              <%= button_to backoffice_friendship_path(friendship), method: :patch,
+                    class: "btn btn-success btn-sm flex-grow-1" do %>
+                <i class="bi bi-check-lg"></i> Accept
+              <% end %>
+              <%= button_to backoffice_friendship_path(friendship), method: :delete,
+                    class: "btn btn-outline-danger btn-sm" do %>
+                <i class="bi bi-x-lg"></i>
+              <% end %>
+            </div>
+          <% elsif friendship.accepted? %>
+            <span class="badge bg-success w-100 py-2">
+              <i class="bi bi-check-circle me-1"></i>Friends
+            </span>
+          <% end %>
+
+          <%= link_to "View profile", backoffice_member_path(member),
+                class: "btn btn-outline-secondary btn-sm w-100 mt-2" %>
+        </div>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% if @members.empty? %>
-    <div class="col-12 text-center text-muted py-5">
-      <i class="bi bi-search fs-1 d-block mb-2 opacity-25"></i>
-      No nomads found matching that search.
-    </div>
-  <% end %>
-</div>
+    <% if @nomads.empty? %>
+      <div class="col-12 text-center text-muted py-4">
+        <i class="bi bi-globe2 fs-1 d-block mb-2 opacity-25"></i>
+        No nomad members found.
+      </div>
+    <% end %>
+  </div>
+
+  <hr class="my-4" style="border-color:#c4d4b8;">
+
+  <%# ── Client members ── %>
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span class="fw-semibold" style="color:#2a3a2e;"><i class="bi bi-person-badge me-1" style="color:#8b6340;"></i>Regular members</span>
+    <span class="badge rounded-pill" style="background:#fdf3e7;color:#8b6340;border:1px solid #e0c99a;"><%= @clients.count %></span>
+  </div>
+
+  <div class="row g-3">
+    <% @clients.each do |member| %>
+      <% friendship = current_user.friendship_with(member) %>
+      <div class="col-md-4 col-lg-3">
+        <div class="card h-100 p-3 text-center">
+          <img src="<%= user_avatar_url(member, 80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80">
+          <div class="fw-semibold"><%= member.name %></div>
+          <div class="text-muted small mb-1"><%= member.profession %></div>
+          <div class="text-muted small mb-3">
+            <i class="bi bi-geo-alt me-1"></i><%= member.country %>
+          </div>
+
+          <% if friendship.nil? %>
+            <%= button_to backoffice_friendships_path(receiver_id: member.id), method: :post,
+                  class: "btn btn-primary btn-sm w-100" do %>
+              <i class="bi bi-person-plus me-1"></i>Add friend
+            <% end %>
+          <% elsif friendship.pending? && friendship.sender == current_user %>
+            <button class="btn btn-secondary btn-sm w-100" disabled>
+              <i class="bi bi-hourglass-split me-1"></i>Request sent
+            </button>
+          <% elsif friendship.pending? && friendship.receiver == current_user %>
+            <div class="d-flex gap-1">
+              <%= button_to backoffice_friendship_path(friendship), method: :patch,
+                    class: "btn btn-success btn-sm flex-grow-1" do %>
+                <i class="bi bi-check-lg"></i> Accept
+              <% end %>
+              <%= button_to backoffice_friendship_path(friendship), method: :delete,
+                    class: "btn btn-outline-danger btn-sm" do %>
+                <i class="bi bi-x-lg"></i>
+              <% end %>
+            </div>
+          <% elsif friendship.accepted? %>
+            <span class="badge bg-success w-100 py-2">
+              <i class="bi bi-check-circle me-1"></i>Friends
+            </span>
+          <% end %>
+
+          <%= link_to "View profile", backoffice_member_path(member),
+                class: "btn btn-outline-secondary btn-sm w-100 mt-2" %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @clients.empty? %>
+      <div class="col-12 text-center text-muted py-4">
+        <i class="bi bi-person-badge fs-1 d-block mb-2 opacity-25"></i>
+        No regular members found.
+      </div>
+    <% end %>
+  </div>
+
+<% else %>
+
+  <%# ── Non-admin: nomads only ── %>
+  <div class="row g-3">
+    <% @members.each do |member| %>
+      <% friendship = current_user.friendship_with(member) %>
+      <div class="col-md-4 col-lg-3">
+        <div class="card h-100 p-3 text-center">
+          <img src="<%= user_avatar_url(member, 80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80">
+          <div class="fw-semibold"><%= member.name %></div>
+          <div class="text-muted small mb-1"><%= member.profession %></div>
+          <div class="text-muted small mb-3">
+            <i class="bi bi-geo-alt me-1"></i><%= member.country %>
+          </div>
+
+          <% if friendship.nil? %>
+            <%= button_to backoffice_friendships_path(receiver_id: member.id), method: :post,
+                  class: "btn btn-primary btn-sm w-100" do %>
+              <i class="bi bi-person-plus me-1"></i>Add friend
+            <% end %>
+          <% elsif friendship.pending? && friendship.sender == current_user %>
+            <button class="btn btn-secondary btn-sm w-100" disabled>
+              <i class="bi bi-hourglass-split me-1"></i>Request sent
+            </button>
+          <% elsif friendship.pending? && friendship.receiver == current_user %>
+            <div class="d-flex gap-1">
+              <%= button_to backoffice_friendship_path(friendship), method: :patch,
+                    class: "btn btn-success btn-sm flex-grow-1" do %>
+                <i class="bi bi-check-lg"></i> Accept
+              <% end %>
+              <%= button_to backoffice_friendship_path(friendship), method: :delete,
+                    class: "btn btn-outline-danger btn-sm" do %>
+                <i class="bi bi-x-lg"></i>
+              <% end %>
+            </div>
+          <% elsif friendship.accepted? %>
+            <span class="badge bg-success w-100 py-2">
+              <i class="bi bi-check-circle me-1"></i>Friends
+            </span>
+          <% end %>
+
+          <%= link_to "View profile", backoffice_member_path(member),
+                class: "btn btn-outline-secondary btn-sm w-100 mt-2" %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @members.empty? %>
+      <div class="col-12 text-center text-muted py-5">
+        <i class="bi bi-search fs-1 d-block mb-2 opacity-25"></i>
+        No nomads found matching that search.
+      </div>
+    <% end %>
+  </div>
+
+<% end %>
